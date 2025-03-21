@@ -3,7 +3,8 @@ package com.financify.statistics;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -31,7 +32,8 @@ public class JParse {
 	private String getJSONFromFile(String file_dir) {
 		String jsonText= "";
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(file_dir));
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file_dir);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 			String line;
 			while((line = bufferedReader.readLine()) != null) {
 				jsonText += line +"\n";
