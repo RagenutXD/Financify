@@ -1,0 +1,16 @@
+{
+    "month_data": [
+        {"month":"Jan", "money": 120.0},
+        {"month":"Feb", "money": 30.0},
+        {"month":"Mar", "money": 50.0},
+        {"month":"Apr", "money": 34.0},
+        {"month":"May", "money": 30.0},
+        {"month":"Jun", "money": 100.0},
+        {"month":"Jul", "money": 87.0},
+        {"month":"Aug", "money": 50.0},
+        {"month":"Sep", "money": 102.0},
+        {"month":"Oct", "money": 30.0},
+        {"month":"Nov", "money": 90.0},
+        {"month":"Dec", "money": 30.0}
+    ]
+}
