@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.financify.components.RoundPanel;
+import com.financify.utils.*;
 
 public class FinancifyStats extends JFrame {
 
@@ -30,7 +31,8 @@ public class FinancifyStats extends JFrame {
     private void initComponents(){
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(600, 500);
+        setSize(800, 600);
+        setTitle("Financify");
         setLocationRelativeTo(null);
 
         // COMPONENTS
@@ -39,24 +41,34 @@ public class FinancifyStats extends JFrame {
         
         statisticsPanel = new JPanel();
         statisticsPanel.setLayout(springLayout);
+        statisticsPanel.setBackground(new Color(0x121212));
+
+        //sidebar
+        sidePanel = new JPanel();
+        sidePanel.setBackground(new Color(0x282828));
+        springLayout.putConstraint(SpringLayout.WEST, sidePanel, 0, SpringLayout.WEST, statisticsPanel);
+        springLayout.putConstraint(SpringLayout.EAST, sidePanel, 60, SpringLayout.WEST, statisticsPanel);
+        springLayout.putConstraint(SpringLayout.NORTH, sidePanel, 0, SpringLayout.NORTH, statisticsPanel);
+        springLayout.putConstraint(SpringLayout.SOUTH, sidePanel, 150, SpringLayout.SOUTH, statisticsPanel);
 
         // header
         headerPanel = new RoundPanel();
         headerPanel.setRoundAll(0, 0, 100, 100);
-        headerPanel.setBackground(new Color(100, 50, 255));
-        springLayout.putConstraint(SpringLayout.WEST, headerPanel, 0, SpringLayout.WEST, statisticsPanel);
+        headerPanel.setBackground(new Color(0x282828));
+        springLayout.putConstraint(SpringLayout.WEST, headerPanel, 0, SpringLayout.EAST, sidePanel);
         springLayout.putConstraint(SpringLayout.EAST, headerPanel, 0, SpringLayout.EAST, statisticsPanel);
         springLayout.putConstraint(SpringLayout.NORTH, headerPanel, 0, SpringLayout.NORTH, statisticsPanel);
-        springLayout.putConstraint(SpringLayout.SOUTH, headerPanel, 100, SpringLayout.NORTH, headerPanel);
+        springLayout.putConstraint(SpringLayout.SOUTH, headerPanel, 150, SpringLayout.NORTH, headerPanel);
 
         lblTitle = new JLabel("Finance Wrapped");
-        lblTitle.setForeground(new Color(200, 200, 200));
-        lblTitle.setFont(new Font("JetBrains Mono", Font.PLAIN, 18));
+        lblTitle.setForeground(Color.white);
+        lblTitle.setFont(new CustomFont().createFont("com/financify/resources/Poppins/Poppins-Bold.ttf", Font.PLAIN, 32));
         springLayout.putConstraint(SpringLayout.NORTH, lblTitle, 20, SpringLayout.NORTH, headerPanel);
         springLayout.putConstraint(SpringLayout.WEST, lblTitle, 20, SpringLayout.WEST, headerPanel);
         
         headerPanel.add(lblTitle);
 
+        statisticsPanel.add(sidePanel);
         statisticsPanel.add(headerPanel);
 
         this.getContentPane().add(statisticsPanel);
@@ -95,6 +107,7 @@ public class FinancifyStats extends JFrame {
     private JLabel lblMoney;
     private com.financify.components.BarChart moneyChart;
     private com.financify.components.RoundPanel headerPanel;
+    private JPanel sidePanel;
     // End of variables declaration//GEN-END:variables
 
     private void testChart(){
