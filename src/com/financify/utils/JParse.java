@@ -38,6 +38,7 @@ public class JParse {
 				jsonText += line +"\n";
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return jsonText;
