@@ -3,15 +3,17 @@ package com.financify.components;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 
 public class RoundBtn extends JButton{
+	/*
+	 * A simpler version of round panel
+	 * 
+	 * It is a button with the original design hidden
+	 * and replaced with a round rectangle 2d
+	 */
 	
 	private int borderRadius;
 	

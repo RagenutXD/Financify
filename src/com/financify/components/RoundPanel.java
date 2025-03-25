@@ -17,8 +17,8 @@ public class RoundPanel extends JPanel{
 		this.roundTopRight = borderRadius;
 		this.roundBottomLeft = borderRadius;
 		this.roundBottomRight = borderRadius;
+		repaint();
 	}
-
 	public void setRoundAll(int topLeft, int topRight, int bottomLeft, int bottomRight ){
 		this.roundTopLeft = topLeft;
 		this.roundTopRight = topRight;
@@ -63,7 +63,6 @@ public class RoundPanel extends JPanel{
 		repaint();
 	}
 
-
 	private int roundTopLeft = 0;
 	private int roundTopRight = 0;
 	private int roundBottomLeft = 0;
@@ -93,7 +92,6 @@ public class RoundPanel extends JPanel{
 		
 		g2.fill(area);
 
-		g2.dispose();
 	}
 	
 	private Shape createTopLeft() {
@@ -136,5 +134,6 @@ public class RoundPanel extends JPanel{
 		area.add(new Area(new Rectangle2D.Double(0, 0, width, height - roundY/2)));
 		return area;
 	}
+
 
 }
