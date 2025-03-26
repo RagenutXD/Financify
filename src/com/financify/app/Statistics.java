@@ -27,19 +27,20 @@ public class Statistics extends JPanel {
         SpringLayout springLayout = new SpringLayout();
         GlobalConstants globalConstants = new GlobalConstants();
         
+        setPreferredSize(new Dimension(770, 1000)); // Set preferred size larger than the scroll pane
         setBackground(Color.decode("#121212"));
         setLayout(springLayout);
 
         JLabel lblAppName = new JLabel("FINANCIFY");
         lblAppName.setForeground(Color.decode("#d2a2fc"));
         lblAppName.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 18));        
-        springLayout.putConstraint(SpringLayout.WEST, lblAppName, globalConstants.SIDE_PANEL_WIDTH + 18, SpringLayout.WEST, this); 
+        springLayout.putConstraint(SpringLayout.WEST, lblAppName,  18, SpringLayout.WEST, this); 
         springLayout.putConstraint(SpringLayout.NORTH, lblAppName, 24, SpringLayout.NORTH, this); 
 
         JLabel lblFinanceWrapped = new JLabel("Finance Wrapped");
         lblFinanceWrapped.setForeground(Color.WHITE);
         lblFinanceWrapped.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 32));        
-        springLayout.putConstraint(SpringLayout.WEST, lblFinanceWrapped, globalConstants.SIDE_PANEL_WIDTH + 17, SpringLayout.WEST, this); 
+        springLayout.putConstraint(SpringLayout.WEST, lblFinanceWrapped,  17, SpringLayout.WEST, this); 
         springLayout.putConstraint(SpringLayout.NORTH, lblFinanceWrapped, 0, SpringLayout.SOUTH, lblAppName); 
 
         //share btn
@@ -47,8 +48,9 @@ public class Statistics extends JPanel {
         btnShare.setBorderRadius(20);
         btnShare.setBackground(Color.white);
         btnShare.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16));
-        springLayout.putConstraint(SpringLayout.EAST, btnShare, -17, SpringLayout.EAST, this);
-        springLayout.putConstraint(SpringLayout.WEST, btnShare, -80, SpringLayout.EAST, btnShare);
+        btnShare.setPreferredSize(new Dimension(90, 40));
+        //TODO: find a way to not make this so annoying to line up
+        springLayout.putConstraint(SpringLayout.WEST, btnShare, 643, SpringLayout.WEST, this);
         springLayout.putConstraint(SpringLayout.NORTH, btnShare, 36, SpringLayout.NORTH, this);
         btnShare.addMouseListener(new MouseAdapter() {
            @Override
@@ -74,7 +76,7 @@ public class Statistics extends JPanel {
         miniPanel1.setRoundAll(20); 
         miniPanel1.setBackground(Color.decode("#282828"));
         miniPanel1.setPreferredSize(new Dimension(167,118));
-        springLayout.putConstraint(SpringLayout.WEST, miniPanel1, globalConstants.SIDE_PANEL_WIDTH + 17, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.WEST, miniPanel1, + 17, SpringLayout.WEST, this);
         springLayout.putConstraint(SpringLayout.NORTH, miniPanel1, 20, SpringLayout.SOUTH, lblFinanceWrapped);
 
         JLabel lblMini1 = new JLabel("Money Saved");
@@ -164,6 +166,12 @@ public class Statistics extends JPanel {
         miniPanel4.add(lblMini4);
         miniPanel4.add(lblTimeSpent);
 
+        JLabel test = new JLabel("testing");
+        test.setFont(boldFont);
+        test.setForeground(Color.white);
+        springLayout.putConstraint(SpringLayout.WEST, test,  23, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.NORTH, test,600, SpringLayout.NORTH, this);
+
         add(lblAppName);
         add(lblFinanceWrapped);
         add(btnShare);
@@ -171,8 +179,7 @@ public class Statistics extends JPanel {
         add(miniPanel2);
         add(miniPanel3);
         add(miniPanel4);
-
-
+        add(test);
 
     }
 

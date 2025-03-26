@@ -33,7 +33,9 @@ public class AppLauncher extends JFrame{
         });
     }
 
+	private JScrollPane scrollPane;
 	private JPanel currentPanel;
+	SpringLayout springLayout = new SpringLayout();
 	GlobalConstants globalConstants = new GlobalConstants();
 	CustomFont customFont = new CustomFont();
 
@@ -48,26 +50,40 @@ public class AppLauncher extends JFrame{
 		setLocationRelativeTo(null);
 		setTitle("Financify");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLayout(springLayout);
 
 		JPanel sidePanel = new JPanel();
 		sidePanel.setSize(globalConstants.SIDE_PANEL_WIDTH, getHeight());
 		sidePanel.setBackground(Color.decode("#282828"));
+		springLayout.putConstraint(SpringLayout.WEST, sidePanel, 0, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.WIDTH, sidePanel, 130, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, sidePanel, 0, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, sidePanel, 0, SpringLayout.SOUTH, getContentPane());
 
 		add(sidePanel);
 
 	}
 
-	private void setCurrentPanel(JPanel nextPanel){
+	private void setCurrentPanel(JPanel nextPanel) {
+	    if (currentPanel != null) {
+	        remove(currentPanel);
+	    }
 
-		if(currentPanel != null){
-			remove(currentPanel);
-		}
+	    currentPanel = nextPanel;
+	    scrollPane = new JScrollPane(currentPanel);
+	    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER); // Ensure vertical scrolling is enabled
+		scrollPane.setBorder(null);
+	    springLayout.putConstraint(SpringLayout.WEST, scrollPane, globalConstants.SIDE_PANEL_WIDTH, SpringLayout.WEST, getContentPane());
+	    springLayout.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, getContentPane());
+	    springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 0, SpringLayout.NORTH, getContentPane());
+	    springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.SOUTH, getContentPane());
 
-		currentPanel = nextPanel;
-		add(currentPanel);
-		revalidate();
-		repaint();
-
+	    currentPanel.revalidate();
+	    currentPanel.repaint();
+	    scrollPane.revalidate();
+	    scrollPane.repaint();
+	    add(scrollPane);
 	}
 
 }
