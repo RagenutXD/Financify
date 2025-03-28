@@ -14,13 +14,15 @@ import java.awt.event.MouseEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.financify.components.Animation;
+import com.financify.components.BarChart;
 import com.financify.components.RoundBtn;
 import com.financify.components.RoundPanel;
 import com.financify.utils.*;
 
 public class Statistics extends JPanel {
 
-    CustomFont customFont = new CustomFont();
+    Utils utils = new Utils();
 
     public Statistics() {
 
@@ -33,13 +35,13 @@ public class Statistics extends JPanel {
 
         JLabel lblAppName = new JLabel("FINANCIFY");
         lblAppName.setForeground(Color.decode("#d2a2fc"));
-        lblAppName.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 18));        
+        lblAppName.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 18));        
         springLayout.putConstraint(SpringLayout.WEST, lblAppName,  18, SpringLayout.WEST, this); 
         springLayout.putConstraint(SpringLayout.NORTH, lblAppName, 24, SpringLayout.NORTH, this); 
 
         JLabel lblFinanceWrapped = new JLabel("Finance Wrapped");
         lblFinanceWrapped.setForeground(Color.WHITE);
-        lblFinanceWrapped.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 32));        
+        lblFinanceWrapped.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Medium.ttf", Font.PLAIN, 32));        
         springLayout.putConstraint(SpringLayout.WEST, lblFinanceWrapped,  17, SpringLayout.WEST, this); 
         springLayout.putConstraint(SpringLayout.NORTH, lblFinanceWrapped, 0, SpringLayout.SOUTH, lblAppName); 
 
@@ -47,26 +49,37 @@ public class Statistics extends JPanel {
         RoundBtn btnShare = new RoundBtn("Share");
         btnShare.setBorderRadius(20);
         btnShare.setBackground(Color.white);
-        btnShare.setFont(customFont.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16));
+        btnShare.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16));
         btnShare.setPreferredSize(new Dimension(90, 40));
         //TODO: find a way to not make this so annoying to line up
         springLayout.putConstraint(SpringLayout.WEST, btnShare, 643, SpringLayout.WEST, this);
         springLayout.putConstraint(SpringLayout.NORTH, btnShare, 36, SpringLayout.NORTH, this);
         btnShare.addMouseListener(new MouseAdapter() {
-           @Override
-           public void mouseEntered(MouseEvent e) {
-               super.mouseEntered(e);
-               btnShare.setBackground(Color.decode("#8b8b8b"));
-           }
-           @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e);
-                btnShare.setBackground(Color.white);
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                utils.playAnimation(new Animation() {
+                    @Override
+                    public void createAnimation(float t){
+                        btnShare.setBackground(utils.interpolateColor(btnShare.getBackground(), Color.decode("#232323"), t));
+                    }
+                }, 0.2f);
+                super.mouseEntered(e);
             }
-        });
+            @Override
+            public void mouseExited(MouseEvent e) {
+                utils.playAnimation(new Animation() {
+                    @Override
+                    public void createAnimation(float t){
+                        btnShare.setBackground(utils.interpolateColor(btnShare.getBackground(), Color.WHITE, t));
+                    }
+                }, 0.2f);
+                super.mouseExited(e);
+            }
+        });        
 
-        Font smallFont = customFont.createFont("com/financify/resources/Poppins/Poppins-Light.ttf", Font.PLAIN, 14);
-        Font boldFont = customFont.createFont("com/financify/resources/Poppins/Poppins-Bold.ttf", Font.PLAIN, 24);
+
+        Font smallFont = utils.createFont("com/financify/resources/Poppins/Poppins-Light.ttf", Font.PLAIN, 14);
+        Font boldFont = utils.createFont("com/financify/resources/Poppins/Poppins-Bold.ttf", Font.PLAIN, 24);
         // small stats
         // this is gonna be ALLOT
 
@@ -76,7 +89,7 @@ public class Statistics extends JPanel {
         miniPanel1.setRoundAll(20); 
         miniPanel1.setBackground(Color.decode("#282828"));
         miniPanel1.setPreferredSize(new Dimension(167,118));
-        springLayout.putConstraint(SpringLayout.WEST, miniPanel1, + 17, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.WEST, miniPanel1,  17, SpringLayout.WEST, this);
         springLayout.putConstraint(SpringLayout.NORTH, miniPanel1, 20, SpringLayout.SOUTH, lblFinanceWrapped);
 
         JLabel lblMini1 = new JLabel("Money Saved");
@@ -166,11 +179,16 @@ public class Statistics extends JPanel {
         miniPanel4.add(lblMini4);
         miniPanel4.add(lblTimeSpent);
 
-        JLabel test = new JLabel("testing");
-        test.setFont(boldFont);
-        test.setForeground(Color.white);
-        springLayout.putConstraint(SpringLayout.WEST, test,  23, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.NORTH, test,600, SpringLayout.NORTH, this);
+        BarChart moneyChart = new BarChart();
+        moneyChart.setPreferredSize(new Dimension(750, 300));
+        moneyChart.setFont(smallFont);
+        moneyChart.setMaxBarColor(Color.decode("#993ff4"));
+        moneyChart.setBarColor(Color.decode("#282828"));
+        moneyChart.setBorderRadius(20);
+        moneyChart.setLabelColor(Color.white);
+        springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 400, SpringLayout.NORTH,this);
+        springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, moneyChart, 0, SpringLayout.HORIZONTAL_CENTER, this);
+        initChart(moneyChart);
 
         add(lblAppName);
         add(lblFinanceWrapped);
@@ -179,7 +197,7 @@ public class Statistics extends JPanel {
         add(miniPanel2);
         add(miniPanel3);
         add(miniPanel4);
-        add(test);
+        add(moneyChart);
 
     }
 
@@ -187,10 +205,8 @@ public class Statistics extends JPanel {
     private JLabel lblSaved;
     private JLabel lblGoals;
     private JLabel lblTimeSpent;
-    private com.financify.components.BarChart moneyChart;
 
-    @SuppressWarnings("unused")
-    private void testChart(){
+    private void initChart(BarChart moneyChart){
         JParse jp = new JParse("com/financify/resources/statistics.json");
         JSONArray month_data = jp.getArrayFromKey("month_data");
         for(int i = 0; i < month_data.size();i++){
@@ -200,5 +216,7 @@ public class Statistics extends JPanel {
             moneyChart.addChartData(month, money);
         }
     }
+
+    
     
 }

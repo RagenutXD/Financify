@@ -7,11 +7,11 @@ package com.financify.components;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
-/**
- *
- * @author user
- */
+
+import com.financify.utils.*;
+
 public class BarChart extends javax.swing.JPanel {
 
     /*
@@ -20,12 +20,15 @@ public class BarChart extends javax.swing.JPanel {
      * TODO: refactor bar chart code 
      */
 
-    private Color barColor = new Color(255,0,0);
-    private Color labelColor = new Color(0, 0,0);
+    Utils utils = new Utils();
+    private Color barColor = Color.RED;
+    private Color labelColor = Color.black;
+    private Color maxBarColor = Color.BLUE;
     private int thickness = 30;
     private ArrayList<String> chartDataStrings = new ArrayList<>();
     private ArrayList<Double> chartDataValues = new ArrayList<>();
     private double max_value = 0;
+    private int borderRadius = 0;
     
     
     public BarChart() {
@@ -55,9 +58,9 @@ public class BarChart extends javax.swing.JPanel {
         
         Graphics2D g2d = (Graphics2D) g.create();
         
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         // make straight line on the bottom 
         int bottom_line = (int) (getHeight() * 0.8);
-        g2d.drawLine(0, bottom_line, getWidth(), bottom_line);
         
         //get margins between bars
         int margin = 0;
@@ -79,23 +82,27 @@ public class BarChart extends javax.swing.JPanel {
             int px_height = 0;
             if(value == max_value){
                 px_height = (int)(getHeight()*0.6);
+                g2d.setColor(maxBarColor);
             }else{
-                px_height = (int) (value/max_value * (getHeight()*0.7));
+                px_height = (int) (value/max_value * (getHeight()*0.6));
+                g2d.setColor(barColor);
             }
             
-            g2d.setColor(barColor);
             int posx = (i*(thickness/2)) + ( (margin) * (i+1) );
-            g2d.fillRect(posx , bottom_line-px_height, thickness, px_height);
-            // margin -> bar - > margin -> margin
+            g2d.fillRoundRect(posx , bottom_line-px_height, thickness, px_height, borderRadius, borderRadius);
             
+            int txtWidth = 0;
+            int txtHeight = g2d.getFontMetrics().getHeight();
             g2d.setColor(labelColor);
-            g2d.drawString(key, posx, (int) (getHeight() * 0.9));
+
+            // draw labelss
+            txtWidth = g2d.getFontMetrics().stringWidth(key);
+            g2d.drawString(key, posx + ((thickness-txtWidth)/2), (int) bottom_line+ (2 *txtHeight));
             
+            // draw numbers
             Double rounded = Double.valueOf(Math.round(value*100)/100);
-            int font_size =  g2d.getFont().getSize();
-            int width = g2d.getFontMetrics().stringWidth(rounded.toString());
-//            g2d.drawChars(rounded.toString().toCharArray(), 0, rounded.toString().length(), posx ,font_size);
-            g2d.drawString(rounded.toString(), posx + ((thickness-width)/2), (bottom_line-px_height) - font_size);
+            txtWidth = g2d.getFontMetrics().stringWidth(rounded.toString());
+            g2d.drawString(rounded.toString(), posx + ((thickness-txtWidth)/2), (bottom_line-px_height) - txtWidth);
         }
         
         
@@ -130,6 +137,20 @@ public class BarChart extends javax.swing.JPanel {
     }
     public Color getLabelColor(){
         return labelColor;
+    }
+
+    public void setMaxBarColor(Color maxBarColor){
+        this.maxBarColor = maxBarColor;
+    }
+    public Color getMaxBarColor(){
+        return maxBarColor;
+    }
+
+    public void setBorderRadius(int borderRadius){
+        this.borderRadius = borderRadius;
+    }
+    public int getBorderRadius(){
+        return borderRadius;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

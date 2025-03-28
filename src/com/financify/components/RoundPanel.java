@@ -17,8 +17,14 @@ public class RoundPanel extends JPanel{
 		this.roundTopRight = borderRadius;
 		this.roundBottomLeft = borderRadius;
 		this.roundBottomRight = borderRadius;
+		this.borderRadius = borderRadius;
 		repaint();
 	}
+
+	public int getBorderRadius(){
+		return borderRadius;
+	}
+
 	public void setRoundAll(int topLeft, int topRight, int bottomLeft, int bottomRight ){
 		this.roundTopLeft = topLeft;
 		this.roundTopRight = topRight;
@@ -67,6 +73,7 @@ public class RoundPanel extends JPanel{
 	private int roundTopRight = 0;
 	private int roundBottomLeft = 0;
 	private int roundBottomRight=0;
+	private int borderRadius = 0;
 	
 	public RoundPanel() {
 		setOpaque(false);

@@ -37,7 +37,7 @@ public class AppLauncher extends JFrame{
 	private JPanel currentPanel;
 	SpringLayout springLayout = new SpringLayout();
 	GlobalConstants globalConstants = new GlobalConstants();
-	CustomFont customFont = new CustomFont();
+	Utils utils = new Utils();
 
 	public AppLauncher(){
 		initComponents();

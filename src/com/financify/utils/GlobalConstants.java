@@ -9,4 +9,6 @@ public class GlobalConstants {
 	// size of size panel
 	public final int SIDE_PANEL_WIDTH = 130;
 
+	// keep the animations 60 fps
+	public final int FPS = 60;
 }
