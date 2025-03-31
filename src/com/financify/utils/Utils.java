@@ -10,7 +10,6 @@ import com.financify.components.Animation;
 
 public class Utils {
 
-	GlobalConstants globalConstants = new GlobalConstants();
 	
 	public Font createFont(String file_dir, int style, int size) {
 				
@@ -30,12 +29,12 @@ public class Utils {
 			public void run(){
 				int frameCount = 0;
 				float t = 0.0f;	
-				while(frameCount < (globalConstants.FPS * time)){
+				while(frameCount < (GlobalConstants.FPS * time)){
 					try{
 						animation.createAnimation(t);
 						frameCount++;
-                        t += 1 / (globalConstants.FPS * time);
-						Thread.sleep(1000/globalConstants.FPS);
+                        t += 1 / (GlobalConstants.FPS * time);
+						Thread.sleep(1000/GlobalConstants.FPS);
 					}catch(Exception e){
 						e.printStackTrace();
 					}
@@ -50,6 +49,11 @@ public class Utils {
         step = (float) Math.round(step * 100)/100;
 
         return (int) (from + (to - from) * step);
+    }
+	public double interpolateDouble(double from, double to, float step){
+        step = (float) Math.round(step * 100)/100;
+
+        return  (from + (to - from) * step);
     }
 
     public Color interpolateColor(Color from, Color to, float step){

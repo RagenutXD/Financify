@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -27,7 +29,6 @@ public class Statistics extends JPanel {
     public Statistics() {
 
         SpringLayout springLayout = new SpringLayout();
-        GlobalConstants globalConstants = new GlobalConstants();
         
         setPreferredSize(new Dimension(770, 1000)); // Set preferred size larger than the scroll pane
         setBackground(Color.decode("#121212"));
@@ -76,6 +77,14 @@ public class Statistics extends JPanel {
                 super.mouseExited(e);
             }
         });        
+        btnShare.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moneyChart.playAnimation();
+            }
+            
+        });
 
 
         Font smallFont = utils.createFont("com/financify/resources/Poppins/Poppins-Light.ttf", Font.PLAIN, 14);
@@ -179,16 +188,26 @@ public class Statistics extends JPanel {
         miniPanel4.add(lblMini4);
         miniPanel4.add(lblTimeSpent);
 
-        BarChart moneyChart = new BarChart();
+        moneyChart = new BarChart(true, 2f);
         moneyChart.setPreferredSize(new Dimension(750, 300));
         moneyChart.setFont(smallFont);
         moneyChart.setMaxBarColor(Color.decode("#993ff4"));
         moneyChart.setBarColor(Color.decode("#282828"));
         moneyChart.setBorderRadius(20);
         moneyChart.setLabelColor(Color.white);
-        springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 400, SpringLayout.NORTH,this);
+        springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 300, SpringLayout.NORTH,this);
         springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, moneyChart, 0, SpringLayout.HORIZONTAL_CENTER, this);
         initChart(moneyChart);
+
+        RoundBtn btnYear = new RoundBtn("Year");
+        btnYear.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16));
+        btnYear.setPreferredSize(new Dimension(250, 40));
+        btnYear.setBorderRadius(20);
+        btnYear.setBackground(Color.decode("#232323"));
+        btnYear.setForeground(Color.white);
+        springLayout.putConstraint(SpringLayout.NORTH, btnYear, 30, SpringLayout.SOUTH, moneyChart);
+        springLayout.putConstraint(SpringLayout.WEST, btnYear, 17, SpringLayout.WEST, this);
+        
 
         add(lblAppName);
         add(lblFinanceWrapped);
@@ -198,6 +217,7 @@ public class Statistics extends JPanel {
         add(miniPanel3);
         add(miniPanel4);
         add(moneyChart);
+        add(btnYear);
 
     }
 
@@ -205,6 +225,7 @@ public class Statistics extends JPanel {
     private JLabel lblSaved;
     private JLabel lblGoals;
     private JLabel lblTimeSpent;
+    private BarChart moneyChart;
 
     private void initChart(BarChart moneyChart){
         JParse jp = new JParse("com/financify/resources/statistics.json");
@@ -212,7 +233,7 @@ public class Statistics extends JPanel {
         for(int i = 0; i < month_data.size();i++){
             JSONObject data = (JSONObject) month_data.get(i);
             String month = data.get("month").toString();
-            Double money = (Double) data.get("money");
+            double money = (double) data.get("money");
             moneyChart.addChartData(month, money);
         }
     }

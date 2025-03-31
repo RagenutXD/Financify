@@ -36,7 +36,6 @@ public class AppLauncher extends JFrame{
 	private JScrollPane scrollPane;
 	private JPanel currentPanel;
 	SpringLayout springLayout = new SpringLayout();
-	GlobalConstants globalConstants = new GlobalConstants();
 	Utils utils = new Utils();
 
 	public AppLauncher(){
@@ -46,14 +45,14 @@ public class AppLauncher extends JFrame{
 
 	private void initComponents(){
 
-		setSize(globalConstants.WINDOW_WIDTH, globalConstants.WINDOW_HEIGHT);
+		setSize(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
 		setLocationRelativeTo(null);
 		setTitle("Financify");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(springLayout);
 
 		JPanel sidePanel = new JPanel();
-		sidePanel.setSize(globalConstants.SIDE_PANEL_WIDTH, getHeight());
+		sidePanel.setSize(GlobalConstants.SIDE_PANEL_WIDTH, getHeight());
 		sidePanel.setBackground(Color.decode("#282828"));
 		springLayout.putConstraint(SpringLayout.WEST, sidePanel, 0, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.WIDTH, sidePanel, 130, SpringLayout.WEST, getContentPane());
@@ -74,7 +73,7 @@ public class AppLauncher extends JFrame{
 	    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER); // Ensure vertical scrolling is enabled
 		scrollPane.setBorder(null);
-	    springLayout.putConstraint(SpringLayout.WEST, scrollPane, globalConstants.SIDE_PANEL_WIDTH, SpringLayout.WEST, getContentPane());
+	    springLayout.putConstraint(SpringLayout.WEST, scrollPane, GlobalConstants.SIDE_PANEL_WIDTH, SpringLayout.WEST, getContentPane());
 	    springLayout.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, getContentPane());
 	    springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 0, SpringLayout.NORTH, getContentPane());
 	    springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.SOUTH, getContentPane());

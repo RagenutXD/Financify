@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.util.ArrayList;
 
 import com.financify.utils.*;
@@ -29,12 +30,58 @@ public class BarChart extends javax.swing.JPanel {
     private ArrayList<Double> chartDataValues = new ArrayList<>();
     private double max_value = 0;
     private int borderRadius = 0;
+    private float t;
+    
+
+    private void setChartT(float t){
+        this.t = t;
+    }
     
     
-    public BarChart() {
+    public BarChart(boolean animated) {
         setOpaque(false);
         
         initComponents();
+
+        if (animated){
+            playAnimation();
+        }else{
+            t = 1;
+        }
+    }
+
+
+    public BarChart(boolean animated, float anim_dur) {
+        setOpaque(false);
+        
+        initComponents();
+
+        if (animated){
+            playAnimation(anim_dur);
+        }else{
+            t = 1;
+        }
+    }
+
+    public void playAnimation(){
+        setChartT(0);
+        utils.playAnimation(new Animation() {
+            @Override
+            public void createAnimation(float t) {
+                setChartT(t);
+                repaint();
+            }
+        }, 1f);
+    }
+    public void playAnimation(float anim_dur){
+        setChartT(0);
+        utils.playAnimation(new Animation() {
+            @Override
+            public void createAnimation(float t) {
+                setChartT(t);
+                repaint();
+            }
+        }, anim_dur);
     }
 
     private void initComponents() {
@@ -74,8 +121,11 @@ public class BarChart extends javax.swing.JPanel {
                 max_value = value;
             }
         }
+
+        
         
         for(int i = 0; i < chartDataStrings.size(); i++){
+            
             double value = chartDataValues.get(i);
             String key = chartDataStrings.get(i);
             
@@ -88,8 +138,9 @@ public class BarChart extends javax.swing.JPanel {
                 g2d.setColor(barColor);
             }
             
+            int interpolatedY = utils.interpolateInt(0, px_height, t);
             int posx = (i*(thickness/2)) + ( (margin) * (i+1) );
-            g2d.fillRoundRect(posx , bottom_line-px_height, thickness, px_height, borderRadius, borderRadius);
+            g2d.fillRoundRect(posx , bottom_line-interpolatedY, thickness, interpolatedY, borderRadius, borderRadius);
             
             int txtWidth = 0;
             int txtHeight = g2d.getFontMetrics().getHeight();
@@ -102,7 +153,7 @@ public class BarChart extends javax.swing.JPanel {
             // draw numbers
             Double rounded = Double.valueOf(Math.round(value*100)/100);
             txtWidth = g2d.getFontMetrics().stringWidth(rounded.toString());
-            g2d.drawString(rounded.toString(), posx + ((thickness-txtWidth)/2), (bottom_line-px_height) - txtWidth);
+            g2d.drawString(rounded.toString(), posx + ((thickness-txtWidth)/2), (bottom_line-interpolatedY) - txtWidth);
         }
         
         
@@ -152,6 +203,7 @@ public class BarChart extends javax.swing.JPanel {
     public int getBorderRadius(){
         return borderRadius;
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
