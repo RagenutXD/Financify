@@ -5,11 +5,43 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 import com.financify.components.Animation;
 
 public class Utils {
 
+	public String fileToString(String file_dir){
+		/*
+		* Takes in a path to the file (starting from src)
+		* And returns the contents of the file as a String
+		*/
+		String s= "";
+		try {
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file_dir);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+			String line;
+			while((line = bufferedReader.readLine()) != null) {
+				s += line +"\n";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return s;
+	}
+
+	public String formatBigNumbers(double number){
+		if(number >= 1000000000) return String.valueOf((double)Math.round((number/1000000000)*100)/100) + "B";
+		if(number >= 1000000) return String.valueOf((double)Math.round((number/1000000)*100)/100) + "M";
+		if(number >= 1000) return String.valueOf((double) Math.round((number/1000)*100)/100) + "K";
+		return String.valueOf(number);
+	}
+	public String formatBigNumbers(int number){
+		if(number >= 1000000) return String.valueOf(Math.round((number/1000000)*100)/100) + "M";
+		if(number >= 1000) return String.valueOf( Math.round((number/1000)*100)/100) + "K";
+		return String.valueOf(number);
+	}
 	
 	public Font createFont(String file_dir, int style, int size) {
 				
@@ -43,6 +75,10 @@ public class Utils {
 		}).start();
 	}
 
+	/*
+	 * Returns an integer between a starting point to an end point
+	 * Based on the progress t
+	 */
 	public int interpolateInt(int from, int to, float step){
         // to avoid values accidentally going past "to"
         // we have to round "step" to 2 decimal places

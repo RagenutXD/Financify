@@ -31,6 +31,7 @@ public class BarChart extends javax.swing.JPanel {
     private double max_value = 0;
     private int borderRadius = 0;
     private float t;
+    private float anim_dur = 0.3f;
     
 
     private void setChartT(float t){
@@ -57,23 +58,14 @@ public class BarChart extends javax.swing.JPanel {
         initComponents();
 
         if (animated){
-            playAnimation(anim_dur);
+            this.anim_dur = anim_dur;
+            playAnimation();
         }else{
             t = 1;
         }
     }
 
     public void playAnimation(){
-        setChartT(0);
-        utils.playAnimation(new Animation() {
-            @Override
-            public void createAnimation(float t) {
-                setChartT(t);
-                repaint();
-            }
-        }, 1f);
-    }
-    public void playAnimation(float anim_dur){
         setChartT(0);
         utils.playAnimation(new Animation() {
             @Override
