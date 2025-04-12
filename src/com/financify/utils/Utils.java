@@ -88,6 +88,7 @@ public class Utils {
 						e.printStackTrace();
 					}
 				}
+				animation.postAnimation();
 			}
 		}).start();
 	}

@@ -1,23 +1,22 @@
 package com.financify.app;
 
 import javax.swing.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +24,7 @@ import org.json.simple.parser.JSONParser;
 import com.financify.components.Animation;
 import com.financify.components.ExtraJPanel;
 import com.financify.components.RoundBtn;
+import com.financify.components.RoundPanel;
 import com.financify.utils.*;
 
 
@@ -57,8 +57,11 @@ public class AppLauncher extends JFrame{
 
 	private JScrollPane scrollPane;
 	private ExtraJPanel currentPanel;
+	private JLayeredPane layeredPane;
+	private RoundPanel coverPanel;
 	SpringLayout springLayout = new SpringLayout();
 	Utils utils = new Utils();
+
 
 	public AppLauncher(){
 		try{
@@ -69,6 +72,8 @@ public class AppLauncher extends JFrame{
 		}
 		initJSONObjects();
 		initComponents();
+
+		// Add KeyAdapter to JFrame
 	}
 
 
@@ -81,10 +86,15 @@ public class AppLauncher extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(springLayout);
 
+		Color hoverColor = Color.decode("#202020");
+		Color sidePanelColor = Color.decode("#282828");
+		Color pressColor = Color.decode("#101010");
+
 		JPanel sidePanel = new JPanel();
 		sidePanel.setLayout(springLayout);
 		sidePanel.setPreferredSize(new Dimension(GlobalConstants.SIDE_PANEL_WIDTH, getHeight()));
-		sidePanel.setBackground(Color.decode("#282828"));
+		sidePanel.setBackground(sidePanelColor);
+		sidePanel.setBounds(0, 0, GlobalConstants.SIDE_PANEL_WIDTH, getHeight());
 		springLayout.putConstraint(SpringLayout.WEST, sidePanel, 0, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.WIDTH, sidePanel, 130, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.NORTH, sidePanel, 0, SpringLayout.NORTH, getContentPane());
@@ -103,7 +113,7 @@ public class AppLauncher extends JFrame{
 		btnHome.setPreferredSize(new Dimension(100, 40));
 		btnHome.setBorderRadius(30);
 		btnHome.setForeground(Color.white);
-		btnHome.setBackground(Color.decode("#282828"));
+		btnHome.setBackground(sidePanelColor);
 		springLayout.putConstraint(SpringLayout.NORTH, btnHome, 30, SpringLayout.SOUTH, logo);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnHome, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
 		btnHome.addMouseListener(new MouseAdapter() {
@@ -112,7 +122,7 @@ public class AppLauncher extends JFrame{
 				utils.playAnimation(new Animation() {
 					@Override
 					public void createAnimation(float t) {
-						btnHome.setBackground(utils.interpolateColor(Color.decode("#282828"), Color.decode("#121212"), t));	
+						btnHome.setBackground(utils.interpolateColor(sidePanelColor, hoverColor, t));	
 					}
 				}, 0.1f);
 				super.mouseEntered(e);
@@ -122,7 +132,7 @@ public class AppLauncher extends JFrame{
 				utils.playAnimation(new Animation() {
 					@Override
 					public void createAnimation(float t) {
-						btnHome.setBackground(utils.interpolateColor(Color.decode("#121212"), Color.decode("#282828"), t));	
+						btnHome.setBackground(utils.interpolateColor(hoverColor, sidePanelColor, t));	
 					}
 				}, 0.1f);
 				super.mouseExited(e);
@@ -134,7 +144,7 @@ public class AppLauncher extends JFrame{
 		btnStatistics.setPreferredSize(new Dimension(100, 40));
 		btnStatistics.setBorderRadius(30);
 		btnStatistics.setForeground(Color.white);
-		btnStatistics.setBackground(Color.decode("#282828"));
+		btnStatistics.setBackground(sidePanelColor);
 		springLayout.putConstraint(SpringLayout.NORTH, btnStatistics, 17, SpringLayout.SOUTH, btnHome);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnStatistics, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
 		btnStatistics.addMouseListener(new MouseAdapter() {
@@ -143,7 +153,7 @@ public class AppLauncher extends JFrame{
 				utils.playAnimation(new Animation() {
 					@Override
 					public void createAnimation(float t) {
-						btnStatistics.setBackground(utils.interpolateColor(Color.decode("#282828"), Color.decode("#121212"), t));	
+						btnStatistics.setBackground(utils.interpolateColor(sidePanelColor, hoverColor, t));	
 					}
 				}, 0.1f);
 				super.mouseEntered(e);
@@ -153,7 +163,7 @@ public class AppLauncher extends JFrame{
 				utils.playAnimation(new Animation() {
 					@Override
 					public void createAnimation(float t) {
-						btnStatistics.setBackground(utils.interpolateColor(Color.decode("#121212"), Color.decode("#282828"), t));	
+						btnStatistics.setBackground(utils.interpolateColor(hoverColor, sidePanelColor, t));	
 					}
 				}, 0.1f);
 				super.mouseExited(e);
@@ -162,41 +172,62 @@ public class AppLauncher extends JFrame{
 		btnStatistics.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						if(btnStatistics.isHovered){
+							btnStatistics.setBackground(utils.interpolateColor(pressColor, hoverColor, t*t));	
+						}else{
+							btnStatistics.setBackground(utils.interpolateColor(pressColor, sidePanelColor, t*t));	
+							
+						}
+					}	
+				}, 0.3f);
 				setCurrentPanel(new Statistics(globalStatsJSON, monthlySavedJSON));
 			}
 		});
+
+		scrollPane = new JScrollPane();
 
 		sidePanel.add(logo);
 		sidePanel.add(btnHome);
 		sidePanel.add(btnStatistics);
 
-		add(sidePanel);
+		coverPanel = new RoundPanel();
+		coverPanel.setBounds(0, 0, getWidth(), getHeight());
+		coverPanel.setBackground(new Color(0, 0, 0, 100));
+		// use an empty mouse listener so mouse events don't pass through the layer
+		coverPanel.addMouseListener(new MouseAdapter() {});
+		coverPanel.setVisible(false);
+
+		// use layered panes instead of just adding directly 
+		layeredPane = getLayeredPane();	
+		layeredPane.add(sidePanel, JLayeredPane.DEFAULT_LAYER);
+		layeredPane.add(scrollPane, JLayeredPane.DEFAULT_LAYER);
+		layeredPane.add(coverPanel, JLayeredPane.PALETTE_LAYER);
 
  	}
 
 	private void setCurrentPanel(ExtraJPanel nextPanel) {
-		System.out.println("hit");
 	    if (currentPanel != null) {
 			currentPanel.onExit();
-	        remove(currentPanel);
-			System.out.println("woah exists>");
+			currentPanel = null;
 	    }
 
 	    currentPanel = nextPanel;
-	    scrollPane = new JScrollPane(currentPanel);
+		scrollPane.setViewportView(currentPanel);
+	    scrollPane.revalidate();
+	    scrollPane.repaint();
+
+		// for the scrollbars and the border of the scroll pane
 	    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER); // Ensure vertical scrolling is enabled
 		scrollPane.setBorder(null);
-	    springLayout.putConstraint(SpringLayout.WEST, scrollPane, GlobalConstants.SIDE_PANEL_WIDTH, SpringLayout.WEST, getContentPane());
-	    springLayout.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, getContentPane());
-	    springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 0, SpringLayout.NORTH, getContentPane());
-	    springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.SOUTH, getContentPane());
 
-	    currentPanel.revalidate();
-	    currentPanel.repaint();
-	    scrollPane.revalidate();
-	    scrollPane.repaint();
-	    add(scrollPane);
+		scrollPane.setBounds(GlobalConstants.SIDE_PANEL_WIDTH, 0, getWidth() - GlobalConstants.SIDE_PANEL_WIDTH, getHeight());
+
+		revalidate();
+		repaint();
 	}
 
 	private JSONObject globalStatsJSON;

@@ -1,5 +1,8 @@
 package com.financify.components;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.JPanel;
 
 /*
@@ -15,5 +18,6 @@ public class ExtraJPanel extends JPanel{
 	 */
 	public void onExit(){
 	}
+
 	
 }

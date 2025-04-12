@@ -3,6 +3,8 @@ package com.financify.components;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -16,6 +18,7 @@ public class RoundBtn extends JButton{
 	 */
 	
 	private int borderRadius;
+	public boolean isHovered;
 	
 	// constructors
 	public RoundBtn(){
@@ -24,6 +27,18 @@ public class RoundBtn extends JButton{
 	public RoundBtn(String text){
 		super(text);
 		setContentAreaFilled(false);
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				isHovered = true;
+				super.mouseEntered(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				isHovered = false;
+				super.mouseExited(e);
+			}
+		});
 	}
 	public RoundBtn( Icon icon){
 		super(icon);
@@ -54,5 +69,6 @@ public class RoundBtn extends JButton{
 		super.paintComponent(g);
 		g.dispose();
 	}
+	
 
 }
