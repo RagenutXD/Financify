@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class RoundPanel extends JPanel{
 
-	public void setRoundAll(int borderRadius){
+	public void setBorderRadius(int borderRadius){
 		this.roundTopLeft = borderRadius;
 		this.roundTopRight = borderRadius;
 		this.roundBottomLeft = borderRadius;
@@ -25,7 +25,7 @@ public class RoundPanel extends JPanel{
 		return borderRadius;
 	}
 
-	public void setRoundAll(int topLeft, int topRight, int bottomLeft, int bottomRight ){
+	public void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight ){
 		this.roundTopLeft = topLeft;
 		this.roundTopRight = topRight;
 		this.roundBottomLeft = bottomLeft;

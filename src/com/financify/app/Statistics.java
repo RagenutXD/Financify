@@ -12,19 +12,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.financify.components.Animation;
 import com.financify.components.BarChart;
+import com.financify.components.ExtraJPanel;
 import com.financify.components.RoundBtn;
 import com.financify.components.RoundPanel;
 import com.financify.utils.*;
+import com.financify.utils.GlobalConstants;
 
-public class Statistics extends JPanel {
+public class Statistics extends ExtraJPanel {
 
     private Utils utils = new Utils();
     private JLabel lblSpent;
@@ -33,13 +34,12 @@ public class Statistics extends JPanel {
     private JLabel lblTimeSpent;
     private BarChart moneyChart;
 
-    private JSONObject yearlyJSON;
-    private JSONObject monthlyJSON;
-    private JSONObject weeklyJSON;    
     private JSONObject globalStatsJSON;
+    private JSONObject monthlySavedJSON;
 
-    public Statistics() {
-        initJSONObjects();
+    public Statistics(JSONObject globalStatsJSON, JSONObject monthlySavedJSON) {
+        this.globalStatsJSON = globalStatsJSON;
+        this.monthlySavedJSON = monthlySavedJSON;
         initComponents();
     }
 
@@ -111,7 +111,7 @@ public class Statistics extends JPanel {
         // MONEY SAVED
         RoundPanel miniPanel1 = new RoundPanel();
         miniPanel1.setLayout(springLayout);
-        miniPanel1.setRoundAll(20); 
+        miniPanel1.setBorderRadius(20); 
         miniPanel1.setBackground(Color.decode("#282828"));
         miniPanel1.setPreferredSize(new Dimension(167,118));
         springLayout.putConstraint(SpringLayout.WEST, miniPanel1,  17, SpringLayout.WEST, this);
@@ -135,7 +135,7 @@ public class Statistics extends JPanel {
         // MONEY SPENT
         RoundPanel miniPanel2 = new RoundPanel();
         miniPanel2.setLayout(springLayout);
-        miniPanel2.setRoundAll(20); 
+        miniPanel2.setBorderRadius(20); 
         miniPanel2.setBackground(Color.decode("#282828"));
         miniPanel2.setPreferredSize(new Dimension(167,118));
         springLayout.putConstraint(SpringLayout.WEST, miniPanel2, 17, SpringLayout.EAST, miniPanel1);
@@ -159,7 +159,7 @@ public class Statistics extends JPanel {
         // GOALS REACHED
         RoundPanel miniPanel3 = new RoundPanel();
         miniPanel3.setLayout(springLayout);
-        miniPanel3.setRoundAll(20); 
+        miniPanel3.setBorderRadius(20); 
         miniPanel3.setBackground(Color.decode("#282828"));
         miniPanel3.setPreferredSize(new Dimension(167,118));
         springLayout.putConstraint(SpringLayout.WEST, miniPanel3, 17, SpringLayout.EAST, miniPanel2);
@@ -171,7 +171,9 @@ public class Statistics extends JPanel {
         springLayout.putConstraint(SpringLayout.WEST, lblMini3, 16, SpringLayout.WEST, miniPanel3);
         springLayout.putConstraint(SpringLayout.SOUTH, lblMini3, 0, SpringLayout.VERTICAL_CENTER, miniPanel3);
         
-        lblGoals = new JLabel(utils.formatBigNumbers((int) globalStatsJSON.get("goalsReached")));
+
+        // json simple treats any number as long so you have to keep using long
+        lblGoals = new JLabel(utils.formatBigNumbers( (long)globalStatsJSON.get("goalsReached")));
         lblGoals.setForeground(Color.WHITE);
         lblGoals.setFont(boldFont);
         springLayout.putConstraint(SpringLayout.WEST, lblGoals, 16, SpringLayout.WEST, miniPanel3);
@@ -183,7 +185,7 @@ public class Statistics extends JPanel {
         // TIME SPENT
         RoundPanel miniPanel4 = new RoundPanel();
         miniPanel4.setLayout(springLayout);
-        miniPanel4.setRoundAll(20); 
+        miniPanel4.setBorderRadius(20); 
         miniPanel4.setBackground(Color.decode("#282828"));
         miniPanel4.setPreferredSize(new Dimension(167,118));
         springLayout.putConstraint(SpringLayout.WEST, miniPanel4, 17, SpringLayout.EAST, miniPanel3);
@@ -213,34 +215,9 @@ public class Statistics extends JPanel {
         moneyChart.setLabelColor(Color.white);
         springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 300, SpringLayout.NORTH,this);
         springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, moneyChart, 0, SpringLayout.HORIZONTAL_CENTER, this);
+        initChart();
 
         Font medFont = utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16);
-        RoundBtn btnYear = new RoundBtn("Year");
-        btnYear.setFont(medFont);
-        btnYear.setPreferredSize(new Dimension(227, 50));
-        btnYear.setBorderRadius(20);
-        btnYear.setBackground(Color.decode("#232323"));
-        btnYear.setForeground(Color.white);
-        springLayout.putConstraint(SpringLayout.NORTH, btnYear, 30, SpringLayout.SOUTH, moneyChart);
-        springLayout.putConstraint(SpringLayout.WEST, btnYear, 17, SpringLayout.WEST, this);
-
-        RoundBtn btnMonth = new RoundBtn("Month");
-        btnMonth.setFont(medFont);
-        btnMonth.setPreferredSize(new Dimension(227, 50));
-        btnMonth.setBorderRadius(20);
-        btnMonth.setBackground(Color.decode("#232323"));
-        btnMonth.setForeground(Color.white);
-        springLayout.putConstraint(SpringLayout.NORTH, btnMonth, 30, SpringLayout.SOUTH, moneyChart);
-        springLayout.putConstraint(SpringLayout.WEST, btnMonth, 18, SpringLayout.EAST, btnYear);
-
-        RoundBtn btnWeek = new RoundBtn("Week");
-        btnWeek.setFont(medFont);
-        btnWeek.setPreferredSize(new Dimension(227, 50));
-        btnWeek.setBorderRadius(20);
-        btnWeek.setBackground(Color.decode("#232323"));
-        btnWeek.setForeground(Color.white);
-        springLayout.putConstraint(SpringLayout.NORTH, btnWeek, 30, SpringLayout.SOUTH, moneyChart);
-        springLayout.putConstraint(SpringLayout.WEST, btnWeek, 18, SpringLayout.EAST, btnMonth);
 
         add(lblAppName);
         add(lblFinanceWrapped);
@@ -250,29 +227,27 @@ public class Statistics extends JPanel {
         add(miniPanel3);
         add(miniPanel4);
         add(moneyChart);
-        add(btnYear);
-        add(btnMonth);
-        add(btnWeek);
 
 
     }
 
-    @SuppressWarnings("unchecked")
-    private void initJSONObjects(){
-        try{
-            JSONParser parser = new JSONParser();
-            globalStatsJSON = (JSONObject) parser.parse(utils.fileToString("com/financify/resources/global_stats.json"));
-            globalStatsJSON.replace("goalsReached", 23);
-            FileWriter file = new FileWriter("src/com/financify/resources/global_stats.json");
-            file.write(globalStatsJSON.toString());
-            file.flush();
-            file.close();
-
-            
-        }catch(Exception e){
-            System.out.println("Error in initializing jsons");
-            e.printStackTrace();
+    private void initChart(){
+        // get current year
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy");
+        JSONObject months = null;
+        try {
+            months = (JSONObject) monthlySavedJSON.get(String.valueOf(formatter.format(date)));
+        } catch (Exception e) {
+            System.err.println("HAPPY NEW YEAR!!... or maybe you just haven't saved for this year ");
+            return;
         }
+
+        for(String month: GlobalConstants.MONTHS){
+            moneyChart.addChartData(month, (Double) months.get(month));
+        }
+
     }
+
     
 }
