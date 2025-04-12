@@ -15,9 +15,11 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.attribute.FileOwnerAttributeView;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -58,7 +60,6 @@ public class AppLauncher extends JFrame{
 	private JScrollPane scrollPane;
 	private ExtraJPanel currentPanel;
 	private JLayeredPane layeredPane;
-	private RoundPanel coverPanel;
 	SpringLayout springLayout = new SpringLayout();
 	Utils utils = new Utils();
 
@@ -139,13 +140,61 @@ public class AppLauncher extends JFrame{
 			}
 		});
 
+		RoundBtn btnSelfNotes = new RoundBtn("Self Notes");
+		btnSelfNotes.setFont(fontBtn);
+		btnSelfNotes.setPreferredSize(new Dimension(100, 40));
+		btnSelfNotes.setBorderRadius(30);
+		btnSelfNotes.setForeground(Color.white);
+		btnSelfNotes.setBackground(sidePanelColor);
+		springLayout.putConstraint(SpringLayout.NORTH, btnSelfNotes, 17, SpringLayout.SOUTH, btnHome);
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnSelfNotes, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
+		btnSelfNotes.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						btnSelfNotes.setBackground(utils.interpolateColor(sidePanelColor, hoverColor, t));	
+					}
+				}, 0.1f);
+				super.mouseEntered(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						btnSelfNotes.setBackground(utils.interpolateColor(hoverColor, sidePanelColor, t));	
+					}
+				}, 0.1f);
+				super.mouseExited(e);
+			}
+		});
+		btnSelfNotes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						if(btnSelfNotes.isHovered){
+							btnSelfNotes.setBackground(utils.interpolateColor(pressColor, hoverColor, t*t));	
+						}else{
+							btnSelfNotes.setBackground(utils.interpolateColor(pressColor, sidePanelColor, t*t));	
+							
+						}
+					}	
+				}, 0.3f);
+				setCurrentPanel(new SelfNotes(notesJSON));
+			}
+		});
+
 		RoundBtn btnStatistics = new RoundBtn("Statistics");
 		btnStatistics.setFont(fontBtn);
 		btnStatistics.setPreferredSize(new Dimension(100, 40));
 		btnStatistics.setBorderRadius(30);
 		btnStatistics.setForeground(Color.white);
 		btnStatistics.setBackground(sidePanelColor);
-		springLayout.putConstraint(SpringLayout.NORTH, btnStatistics, 17, SpringLayout.SOUTH, btnHome);
+		springLayout.putConstraint(SpringLayout.NORTH, btnStatistics, 17, SpringLayout.SOUTH, btnSelfNotes);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnStatistics, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
 		btnStatistics.addMouseListener(new MouseAdapter() {
 			@Override
@@ -191,20 +240,15 @@ public class AppLauncher extends JFrame{
 
 		sidePanel.add(logo);
 		sidePanel.add(btnHome);
+		sidePanel.add(btnSelfNotes);
 		sidePanel.add(btnStatistics);
 
-		coverPanel = new RoundPanel();
-		coverPanel.setBounds(0, 0, getWidth(), getHeight());
-		coverPanel.setBackground(new Color(0, 0, 0, 100));
-		// use an empty mouse listener so mouse events don't pass through the layer
-		coverPanel.addMouseListener(new MouseAdapter() {});
-		coverPanel.setVisible(false);
+
 
 		// use layered panes instead of just adding directly 
 		layeredPane = getLayeredPane();	
 		layeredPane.add(sidePanel, JLayeredPane.DEFAULT_LAYER);
 		layeredPane.add(scrollPane, JLayeredPane.DEFAULT_LAYER);
-		layeredPane.add(coverPanel, JLayeredPane.PALETTE_LAYER);
 
  	}
 
@@ -232,20 +276,20 @@ public class AppLauncher extends JFrame{
 
 	private JSONObject globalStatsJSON;
     private JSONObject monthlySavedJSON;
+	private JSONArray notesJSON;
 
     private void initJSONObjects(){
         try{
             JSONParser parser = new JSONParser();
             globalStatsJSON = (JSONObject) parser.parse(utils.fileToString("\\global_stats.json"));
 			monthlySavedJSON = (JSONObject) parser.parse(utils.fileToString("\\dates.json"));
-
+			notesJSON = (JSONArray) parser.parse(utils.fileToString("\\notes.json"));
 
             //FileWriter file = new FileWriter("src/com/financify/resources/global_stats.json");
             //file.write(globalStatsJSON.toString());
             //file.flush();
             //file.close();
 
-            
         }catch(Exception e){
             System.out.println("Error in initializing jsons");
             e.printStackTrace();
@@ -269,6 +313,11 @@ public class AppLauncher extends JFrame{
 			fwGlobals.write(globalTemp);
 			fwGlobals.flush();
 			fwGlobals.close();
+
+			FileWriter fwNotes = new FileWriter(GlobalConstants.BASE_PATH + "\\notes.json");
+			fwNotes.write("[\n]");
+			fwNotes.flush();
+			fwNotes.close();
 
 		//}
 	}
