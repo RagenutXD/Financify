@@ -23,30 +23,22 @@ public class RoundBtn extends JButton{
 	// constructors
 	public RoundBtn(){
 		setContentAreaFilled(false);
+		hoverMouseListener();
 	}
 	public RoundBtn(String text){
 		super(text);
 		setContentAreaFilled(false);
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				isHovered = true;
-				super.mouseEntered(e);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				isHovered = false;
-				super.mouseExited(e);
-			}
-		});
+		hoverMouseListener();
 	}
 	public RoundBtn( Icon icon){
 		super(icon);
 		setContentAreaFilled(false);
+		hoverMouseListener();
 	}
 	public RoundBtn(String text, Icon icon){
 		super(text, icon);
 		setContentAreaFilled(false);
+		hoverMouseListener();
 	}
 
 	public int getBorderRadius(){
@@ -70,5 +62,19 @@ public class RoundBtn extends JButton{
 		g.dispose();
 	}
 	
+	private void hoverMouseListener(){
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				isHovered = true;
+				super.mouseEntered(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				isHovered = false;
+				super.mouseExited(e);
+			}
+		});
+	}
 
 }

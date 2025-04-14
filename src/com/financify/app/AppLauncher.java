@@ -12,6 +12,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -250,6 +252,19 @@ public class AppLauncher extends JFrame{
 		layeredPane.add(sidePanel, JLayeredPane.DEFAULT_LAYER);
 		layeredPane.add(scrollPane, JLayeredPane.DEFAULT_LAYER);
 
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try{
+					currentPanel.onExit();
+				}catch(NullPointerException nullPointerException){
+					System.err.println("This panel does not exist or isn't an extraJPanel");
+					nullPointerException.printStackTrace();
+				}
+				super.windowClosing(e);
+			}	
+		});
+
  	}
 
 	private void setCurrentPanel(ExtraJPanel nextPanel) {
@@ -270,6 +285,7 @@ public class AppLauncher extends JFrame{
 
 		scrollPane.setBounds(GlobalConstants.SIDE_PANEL_WIDTH, 0, getWidth() - GlobalConstants.SIDE_PANEL_WIDTH, getHeight());
 
+		
 		revalidate();
 		repaint();
 	}
