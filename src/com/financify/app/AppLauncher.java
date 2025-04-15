@@ -76,7 +76,7 @@ public class AppLauncher extends JFrame{
 		initJSONObjects();
 		initComponents();
 
-		// Add KeyAdapter to JFrame
+		setCurrentPanel(new Home(globalStatsJSON));
 	}
 
 
@@ -84,7 +84,7 @@ public class AppLauncher extends JFrame{
 
 		setSize(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
 		setResizable(false);
-		setLocationRelativeTo(null);
+		// setLocationRelativeTo(null);
 		setTitle("Financify");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(springLayout);
@@ -139,6 +139,23 @@ public class AppLauncher extends JFrame{
 					}
 				}, 0.1f);
 				super.mouseExited(e);
+			}
+		});
+		btnHome.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						if(btnHome.isHovered){
+							btnHome.setBackground(utils.interpolateColor(pressColor, hoverColor, t*t));	
+						}else{
+							btnHome.setBackground(utils.interpolateColor(pressColor, sidePanelColor, t*t));	
+							
+						}
+					}	
+				}, 0.3f);
+				setCurrentPanel(new Home(globalStatsJSON));
 			}
 		});
 

@@ -1,5 +1,7 @@
 package com.financify.components;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -18,6 +20,22 @@ public class RoundBtn extends JButton{
 	 */
 	
 	private int borderRadius;
+	private int borderSize = 0;
+	private Color borderColor;
+
+	public Color getBorderColor() {
+		return borderColor;
+	}
+	public void setBorderColor(Color borderColor) {
+		this.borderColor = borderColor;
+	}
+	public int getBorderSize() {
+		return borderSize;
+	}
+	public void setBorderSize(int borderSize) {
+		this.borderSize = borderSize;
+	}
+
 	public boolean isHovered;
 	
 	// constructors
@@ -57,6 +75,12 @@ public class RoundBtn extends JButton{
 		//draw rounded border
 		g2.setColor(getBackground());
 		g2.fillRoundRect(0, 0, getWidth(), getHeight(), borderRadius, borderRadius);
+
+		if(borderSize>0){
+			g2.setStroke(new BasicStroke(borderSize));
+			g2.setColor(borderColor);
+			g2.drawRoundRect(borderSize/2, borderSize/2, getWidth()-borderSize, getHeight()-borderSize, borderRadius-(2*borderSize), borderRadius-(2*borderSize));
+		}
 		
 		super.paintComponent(g);
 		g.dispose();
