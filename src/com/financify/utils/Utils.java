@@ -120,6 +120,4 @@ public class Utils {
         return new Color(r, g, b);
     }
 
-
-	
 }

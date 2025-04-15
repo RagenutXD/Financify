@@ -205,7 +205,7 @@ public class SelfNotes extends ExtraJPanel{
 
 
 				// add the display
-				displayNote(txtTitle.getText(), date, txtArea.getText());
+				displayNote(noteContainer, txtTitle.getText(), date, txtArea.getText(), 1);
 
 
 				//close frame
@@ -297,7 +297,7 @@ public class SelfNotes extends ExtraJPanel{
 
 	}
 
-	private void displayNote(String title, String date, String fullNote){
+	public void displayNote(JPanel noteContainer, String title, String date, String fullNote, int index){
 		RoundPanel notePanel = new RoundPanel();
 		notePanel.setPreferredSize(new Dimension(220,150));
 		notePanel.setBackground(Color.decode("#282828"));
@@ -442,7 +442,7 @@ public class SelfNotes extends ExtraJPanel{
 			}
 		});
 
-		noteContainer.add(notePanel, 1);
+		noteContainer.add(notePanel, index);
 		noteContainer.revalidate();
 		noteContainer.repaint();
 		int rowCount = Math.max(1, (notesJSON.size()+1)/3);
@@ -454,7 +454,7 @@ public class SelfNotes extends ExtraJPanel{
 	private void initContainer(){
 		for(int i = 0; i < notesJSON.size(); i++){
 			JSONObject entry = (JSONObject) notesJSON.get(i);
-			displayNote( (String) entry.get("title"), (String) entry.get("date"), (String) entry.get("full_note"));
+			displayNote( noteContainer, (String) entry.get("title"), (String) entry.get("date"), (String) entry.get("full_note"), 1);
 		}
 	}
 	
