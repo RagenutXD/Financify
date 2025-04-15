@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicBorders.RolloverButtonBorder;
 import javax.swing.text.Document;
 
 import org.json.simple.JSONArray;
@@ -51,7 +52,8 @@ public class SelfNotes extends ExtraJPanel{
 	private void initComponents(){
 		SpringLayout springLayout = new SpringLayout();
 
-        setPreferredSize(new Dimension(770, 1000)); // Set preferred size larger than the scroll pane
+		int rowCount = Math.max(1, (notesJSON.size()+1)/3);
+        setPreferredSize(new Dimension(770, 600 + ((rowCount) * 150+20 ))); // Set preferred size larger than the scroll pane
 		setBackground(Color.decode("#121212"));
 		setLayout(springLayout);
 
@@ -200,13 +202,10 @@ public class SelfNotes extends ExtraJPanel{
 
 				noteData.put("full_note", txtArea.getText());
 				notesJSON.add(noteData);
-				System.out.println(notesJSON.toJSONString());
 
-				// recalculate the rows and cols of noteContainer
-				int rowCount = Math.max(1, (notesJSON.size()+1)/3);
 
 				// add the display
-				displayNote(txtTitle.getText(), date);
+				displayNote(txtTitle.getText(), date, txtArea.getText());
 
 
 				//close frame
@@ -246,7 +245,6 @@ public class SelfNotes extends ExtraJPanel{
 
 		noteContainer = new JPanel();
 		noteContainer.setOpaque(false);
-		System.out.println("Notes Json size: " + notesJSON.size());
 		noteContainer.setLayout(new GridLayout(0, 3, 20, 20));
         springLayout.putConstraint(SpringLayout.WEST, noteContainer,  25, SpringLayout.WEST, this); 
         springLayout.putConstraint(SpringLayout.NORTH, noteContainer, 40, SpringLayout.SOUTH, lblSelfNotes); 
@@ -299,7 +297,7 @@ public class SelfNotes extends ExtraJPanel{
 
 	}
 
-	private void displayNote(String title, String date){
+	private void displayNote(String title, String date, String fullNote){
 		RoundPanel notePanel = new RoundPanel();
 		notePanel.setPreferredSize(new Dimension(220,150));
 		notePanel.setBackground(Color.decode("#282828"));
@@ -314,8 +312,9 @@ public class SelfNotes extends ExtraJPanel{
 		// springLayout.putConstraint(SpringLayout.WEST, lblTitle, 20, SpringLayout.WEST, notePanel);
 
 		JTextArea _lblTitle = new JTextArea();
-		_lblTitle.setEditable(false);
+		_lblTitle.setFocusable(false);
 		_lblTitle.setText(title);
+		_lblTitle.setOpaque(false);
 		_lblTitle.setBorder(null);
 		_lblTitle.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Bold.ttf", Font.PLAIN, 16));
 		_lblTitle.setBackground(Color.decode("#282828"));
@@ -326,9 +325,7 @@ public class SelfNotes extends ExtraJPanel{
 		_lblTitle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Clicked fromt the textArea, passing the event to panel");
 				notePanel.dispatchEvent(e);
-				super.mouseClicked(e);
 			}	
 		});
 
@@ -346,7 +343,73 @@ public class SelfNotes extends ExtraJPanel{
 		notePanel.add(lblTitle);
 		notePanel.add(lblDate);
 		
+		CoverPanel noteCoverPanel = new CoverPanel();
+		noteCoverPanel.setLayout(springLayout);
+
+		RoundPanel _displayPanel = new RoundPanel();
+		_displayPanel.setLayout(springLayout);
+		_displayPanel.setBorderRadius(40);
+		_displayPanel.setBackground(Color.decode("#282828"));
+
+		JLabel lblDisplayTitle = new JLabel(title);
+		lblDisplayTitle.setForeground(Color.WHITE);
+		lblDisplayTitle.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Bold.ttf", Font.PLAIN, 24));
+		springLayout.putConstraint(SpringLayout.NORTH, lblDisplayTitle, 30, SpringLayout.NORTH, _displayPanel);
+		springLayout.putConstraint(SpringLayout.WEST, lblDisplayTitle, 30, SpringLayout.WEST, _displayPanel);
+
+		JLabel lblDisplayDate = new JLabel(date);
+		lblDisplayDate.setForeground(Color.WHITE);
+		lblDisplayDate.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 14));
+		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, lblDisplayDate, 0, SpringLayout.VERTICAL_CENTER, lblDisplayTitle);
+		springLayout.putConstraint(SpringLayout.EAST, lblDisplayDate, -30, SpringLayout.EAST, _displayPanel);
+
+		JTextArea _lblDisplayNote = new JTextArea();
+		_lblDisplayNote.setEditable(false);
+		_lblDisplayNote.setText(fullNote);
+		_lblDisplayNote.setBorder(null);
+		_lblDisplayNote.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 16));
+		_lblDisplayNote.setForeground(Color.white);
+		_lblDisplayNote.setBackground(_displayPanel.getBackground());
+		// _lblDisplayNote.setBackground(Color.green);
+		_lblDisplayNote.setLineWrap(true);
+		_lblDisplayNote.setWrapStyleWord(true);
+
+		BlankWrapper lblDisplayNote = new BlankWrapper(_lblDisplayNote);
+		lblDisplayNote.setPreferredSize(new Dimension(540, 230));
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, lblDisplayNote, 0, SpringLayout.HORIZONTAL_CENTER, _displayPanel);
+		springLayout.putConstraint(SpringLayout.NORTH, lblDisplayNote, 20, SpringLayout.SOUTH, lblDisplayTitle);
+
+		RoundBtn btnCancel = new RoundBtn("Cancel");
+		btnCancel.setPreferredSize(new Dimension(100, 40));
+		btnCancel.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 14));
+		btnCancel.setBorderRadius(40);
+		btnCancel.setForeground(Color.BLACK);
+		btnCancel.setBackground(Color.white);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnCancel, -30, SpringLayout.SOUTH, _displayPanel);
+		springLayout.putConstraint(SpringLayout.EAST, btnCancel, -30, SpringLayout.EAST, _displayPanel);
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				noteCoverPanel.uncover();	
+			}	
+		});
+
+		_displayPanel.add(lblDisplayTitle);
+		_displayPanel.add(lblDisplayDate);
+		_displayPanel.add(lblDisplayNote);
+		_displayPanel.add(btnCancel);
+
+		BlankWrapper displayPanel = new BlankWrapper(_displayPanel);
+		displayPanel.setPreferredSize(new Dimension(600,400));
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, displayPanel, 0, SpringLayout.HORIZONTAL_CENTER, noteCoverPanel);
+		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, displayPanel, 0, SpringLayout.VERTICAL_CENTER, noteCoverPanel);
+
+
+		noteCoverPanel.add(displayPanel);
+
+		
 		//TODO: Make the hovering on the text area still work 
+		// TODO: REPLACE TXTAREA WITH HTML TAGGED JLABELS
 
 		notePanel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -375,20 +438,23 @@ public class SelfNotes extends ExtraJPanel{
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("woah");
-				super.mouseClicked(e);
+				noteCoverPanel.cover(getRootPane());
 			}
 		});
 
 		noteContainer.add(notePanel, 1);
 		noteContainer.revalidate();
 		noteContainer.repaint();
+		int rowCount = Math.max(1, (notesJSON.size()+1)/3);
+        setPreferredSize(new Dimension(770, 600 + ((rowCount) * 150+20 ))); // Set preferred size larger than the scroll pane
+		revalidate();
+		repaint();
 	}
 
 	private void initContainer(){
 		for(int i = 0; i < notesJSON.size(); i++){
 			JSONObject entry = (JSONObject) notesJSON.get(i);
-			displayNote( (String) entry.get("title"), (String) entry.get("date"));
+			displayNote( (String) entry.get("title"), (String) entry.get("date"), (String) entry.get("full_note"));
 		}
 	}
 	
