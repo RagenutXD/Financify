@@ -20,7 +20,7 @@ public class RoundBtn extends JButton{
 	 */
 	
 	private int borderRadius;
-	private int borderSize = 0;
+	private int borderThickness = 0;
 	private Color borderColor;
 
 	public Color getBorderColor() {
@@ -29,11 +29,11 @@ public class RoundBtn extends JButton{
 	public void setBorderColor(Color borderColor) {
 		this.borderColor = borderColor;
 	}
-	public int getBorderSize() {
-		return borderSize;
+	public int getBorderThickness() {
+		return borderThickness;
 	}
-	public void setBorderSize(int borderSize) {
-		this.borderSize = borderSize;
+	public void setBorderThickness(int borderThickness) {
+		this.borderThickness = borderThickness;
 	}
 
 	public boolean isHovered;
@@ -76,10 +76,10 @@ public class RoundBtn extends JButton{
 		g2.setColor(getBackground());
 		g2.fillRoundRect(0, 0, getWidth(), getHeight(), borderRadius, borderRadius);
 
-		if(borderSize>0){
-			g2.setStroke(new BasicStroke(borderSize));
+		if(borderThickness>0){
+			g2.setStroke(new BasicStroke(borderThickness));
 			g2.setColor(borderColor);
-			g2.drawRoundRect(borderSize/2, borderSize/2, getWidth()-borderSize, getHeight()-borderSize, borderRadius-(2*borderSize), borderRadius-(2*borderSize));
+			g2.drawRoundRect(borderThickness/2, borderThickness/2, getWidth()-borderThickness, getHeight()-borderThickness, borderRadius-(2*borderThickness), borderRadius-(2*borderThickness));
 		}
 		
 		super.paintComponent(g);

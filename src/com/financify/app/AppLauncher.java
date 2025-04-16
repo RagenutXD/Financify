@@ -76,7 +76,7 @@ public class AppLauncher extends JFrame{
 		initJSONObjects();
 		initComponents();
 
-		setCurrentPanel(new Home(globalStatsJSON));
+		setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON));
 	}
 
 
@@ -84,7 +84,7 @@ public class AppLauncher extends JFrame{
 
 		setSize(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
 		setResizable(false);
-		// setLocationRelativeTo(null);
+		setLocationRelativeTo(null);
 		setTitle("Financify");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(springLayout);
@@ -155,7 +155,7 @@ public class AppLauncher extends JFrame{
 						}
 					}	
 				}, 0.3f);
-				setCurrentPanel(new Home(globalStatsJSON));
+				setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON));
 			}
 		});
 

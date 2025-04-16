@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.naming.event.ObjectChangeListener;
 import javax.swing.*;
@@ -25,11 +29,14 @@ public class Home extends ExtraJPanel{
 	
 	private Utils utils = new Utils();
 	private JSONObject globalStatsJSON;
+	private JSONObject monthlySavedJSON;
+	private JLabel lblMoney;
 	private CoverPanel saveCoverPavel;
 	private CoverPanel spendCoverPanel;
 	
-	public Home(JSONObject globalStatsJSON){
+	public Home(JSONObject globalStatsJSON, JSONObject monthlySavedJSON){
 		this.globalStatsJSON = globalStatsJSON;
+		this.monthlySavedJSON = monthlySavedJSON;
 		initComponents();
 	}
 
@@ -57,7 +64,7 @@ public class Home extends ExtraJPanel{
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, cGrad, 0, SpringLayout.HORIZONTAL_CENTER, this);
 		springLayout.putConstraint(SpringLayout.NORTH, cGrad, 80, SpringLayout.NORTH, lblHomePage);
 
-		JLabel lblMoney = new JLabel();
+		lblMoney = new JLabel();
 		double moni = (double) globalStatsJSON.get("currentSaved");	
 		lblMoney.setText( "P" + String.valueOf(moni));
 		lblMoney.setForeground(Color.white);
@@ -130,7 +137,7 @@ public class Home extends ExtraJPanel{
 		btnSpend.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-SemiBold.ttf", Font.PLAIN, 16));
 		btnSpend.setBorderRadius(40);
 		btnSpend.setBorderColor(Color.white);
-		btnSpend.setBorderSize(1);
+		btnSpend.setBorderThickness(1);
 		btnSpend.setBackground(new Color(0,0,0,0));
 		btnSpend.setForeground(Color.white);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnSpend, -offsetForBtn, SpringLayout.HORIZONTAL_CENTER, this);
@@ -216,11 +223,82 @@ public class Home extends ExtraJPanel{
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, txtSave, 0, SpringLayout.HORIZONTAL_CENTER, _savePanel);
 		springLayout.putConstraint(SpringLayout.NORTH, txtSave, 0, SpringLayout.SOUTH, lblTxt);
 
+		RoundBtn btnAdd = new RoundBtn("Add");
+		btnAdd.setPreferredSize(new Dimension(100, 40));
+		btnAdd.setFont(inputFont);
+		btnAdd.setBorderRadius(30);
+		btnAdd.setForeground(Color.WHITE);
+		btnAdd.setBackground(Color.decode("#993ff4"));
+		springLayout.putConstraint(SpringLayout.SOUTH, btnAdd, -30, SpringLayout.SOUTH, _savePanel);
+		springLayout.putConstraint(SpringLayout.EAST, btnAdd, -30, SpringLayout.EAST, _savePanel);
+		btnAdd.addActionListener(new ActionListener() {
+			@Override
+			@SuppressWarnings("unchecked")
+			public void actionPerformed(ActionEvent e) {
+				// get the amount saved and round it
+				Double money = Double.parseDouble(txtSave.getText());
+				money = (double) Math.round(money*100)/100;
+				System.out.println(money);
+
+				// put it into the json object
+				double totalSaved = (double) globalStatsJSON.get("totalSaved") + money;
+				double currentSaved = (double) globalStatsJSON.get("currentSaved") + money;
+
+				// round values here too so that value wont be a repeating number, ex: 12.33333...
+				totalSaved = (double) Math.round(totalSaved*100)/100;
+				currentSaved = (double) Math.round(currentSaved*100)/100;
+
+				globalStatsJSON.put("totalSaved", totalSaved);
+				globalStatsJSON.put("currentSaved", currentSaved);
+
+				// update money display
+				lblMoney.setText("P" + currentSaved);
+
+				// UPDATE THE VALUES ON DATES.JSON
+				LocalDate d = LocalDate.now(); // get the month and year of today first
+				DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy MMM");
+
+				// separate the date format like 2025 Mar
+				// into an array where the index 0  is the year and index 1 is the month 
+				String[] currDate = df.format(d).split(" ");
+					
+				// put into the json
+				JSONObject year = (JSONObject) monthlySavedJSON.get(currDate[0]);
+				double savedThisMonth = (double) year.get(currDate[1]) + money;
+				savedThisMonth = (double) Math.round(savedThisMonth*100)/100;
+				year.put(currDate[1], savedThisMonth); 
+				monthlySavedJSON.put(currDate[0], year);
+				
+				saveCoverPavel.uncover();
+				txtSave.setText("");
+			}		
+		});
+
+		RoundBtn btnCancel = new RoundBtn("Cancel");
+		btnCancel.setPreferredSize(new Dimension(100, 40));
+		btnCancel.setFont(inputFont);
+		btnCancel.setBorderThickness(1);
+		btnCancel.setBackground(new Color(0,0,0,0));
+		btnCancel.setBorderColor(Color.white);
+		btnCancel.setBorderRadius(30);
+		btnCancel.setForeground(Color.WHITE);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnCancel, -30, SpringLayout.SOUTH, _savePanel);
+		springLayout.putConstraint(SpringLayout.WEST, btnCancel, 30, SpringLayout.WEST, _savePanel);
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveCoverPavel.uncover();
+				txtSave.setText("");
+			}		
+		});
+
 		_savePanel.add(lblTxt);
 		_savePanel.add(txtSave);
+		_savePanel.add(btnAdd);
+		_savePanel.add(btnCancel);
 
 		BlankWrapper savePanel = new BlankWrapper(_savePanel);
-		savePanel.setPreferredSize(new Dimension(300, 150));
+		savePanel.setPreferredSize(new Dimension(300, 200));
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, savePanel, 0, SpringLayout.HORIZONTAL_CENTER, saveCoverPavel);
 		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, savePanel, 0, SpringLayout.VERTICAL_CENTER, saveCoverPavel);
 
@@ -231,6 +309,22 @@ public class Home extends ExtraJPanel{
 
 	}
 
+	@Override
+	public void onExit() {
+		try{
+			FileWriter globalStatsFile = new FileWriter(GlobalConstants.BASE_PATH + "\\global_stats.json");
+			globalStatsFile.write(globalStatsJSON.toJSONString());
+			globalStatsFile.flush();
+			globalStatsFile.close();
+
+			FileWriter datesFile = new FileWriter(GlobalConstants.BASE_PATH + "\\dates.json");
+			datesFile.write(monthlySavedJSON.toJSONString());
+			datesFile.flush();
+			datesFile.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	
+	}	
 
 }

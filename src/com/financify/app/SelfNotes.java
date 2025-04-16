@@ -173,7 +173,7 @@ public class SelfNotes extends ExtraJPanel{
 		RoundBtn btnAdd = new RoundBtn("Add");
 		btnAdd.setPreferredSize(new Dimension(100, 40));
 		btnAdd.setFont(inputFont);
-		btnAdd.setBorderRadius(40);
+		btnAdd.setBorderRadius(30);
 		btnAdd.setForeground(Color.WHITE);
 		btnAdd.setBackground(Color.decode("#993ff4"));
 		springLayout.putConstraint(SpringLayout.SOUTH, btnAdd, -30, SpringLayout.SOUTH, addPanel);
@@ -212,7 +212,7 @@ public class SelfNotes extends ExtraJPanel{
 		RoundBtn btnCancel = new RoundBtn("Cancel");
 		btnCancel.setPreferredSize(new Dimension(100, 40));
 		btnCancel.setFont(inputFont);
-		btnCancel.setBorderRadius(40);
+		btnCancel.setBorderRadius(30);
 		btnCancel.setForeground(Color.BLACK);
 		btnCancel.setBackground(Color.white);
 		springLayout.putConstraint(SpringLayout.SOUTH, btnCancel, -30, SpringLayout.SOUTH, addPanel);
@@ -374,7 +374,7 @@ public class SelfNotes extends ExtraJPanel{
 		RoundBtn btnCancel = new RoundBtn("Cancel");
 		btnCancel.setPreferredSize(new Dimension(100, 40));
 		btnCancel.setFont(utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 14));
-		btnCancel.setBorderRadius(40);
+		btnCancel.setBorderRadius(30);
 		btnCancel.setForeground(Color.BLACK);
 		btnCancel.setBackground(Color.white);
 		springLayout.putConstraint(SpringLayout.SOUTH, btnCancel, -30, SpringLayout.SOUTH, _displayPanel);
