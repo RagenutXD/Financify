@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 import javax.naming.event.ObjectChangeListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.json.simple.JSONObject;
 
@@ -31,7 +33,7 @@ public class Home extends ExtraJPanel{
 	private JSONObject globalStatsJSON;
 	private JSONObject monthlySavedJSON;
 	private JLabel lblMoney;
-	private CoverPanel saveCoverPavel;
+	private CoverPanel saveCoverPanel;
 	private CoverPanel spendCoverPanel;
 	
 	public Home(JSONObject globalStatsJSON, JSONObject monthlySavedJSON){
@@ -127,7 +129,7 @@ public class Home extends ExtraJPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCoverPavel.cover(getRootPane());
+				saveCoverPanel.cover(getRootPane());
 			}
 			
 		});
@@ -142,6 +144,12 @@ public class Home extends ExtraJPanel{
 		btnSpend.setForeground(Color.white);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnSpend, -offsetForBtn, SpringLayout.HORIZONTAL_CENTER, this);
 		springLayout.putConstraint(SpringLayout.NORTH, btnSpend, 0, SpringLayout.SOUTH, lblMoney);
+		btnSpend.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spendCoverPanel.cover(getRootPane());	
+			}	
+		});
 
 		btnSpend.addMouseListener(new MouseAdapter() {
 			@Override
@@ -175,6 +183,10 @@ public class Home extends ExtraJPanel{
 				cGrad.setRadius(utils.interpolateInt(190, 150, (float) Math.sqrt(Math.sqrt(t))));
 				cGrad.revalidate();
 				cGrad.repaint();
+				double finalMon = (double) globalStatsJSON.get("currentSaved");
+				double interpMon =  utils.interpolateDouble(finalMon/2, finalMon, ShapeFunctions.easeOutExpo(t)) ;
+				float roundedMon = (float) Math.round(interpMon * 100) / 100;
+				lblMoney.setText( "P" +String.valueOf(roundedMon) );
 				lblMoney.revalidate();
 				lblMoney.repaint();
 			}			
@@ -195,9 +207,9 @@ public class Home extends ExtraJPanel{
 	}
 
 	private void initSaveCoverPanel() {
-		saveCoverPavel = new CoverPanel();
+		saveCoverPanel = new CoverPanel();
 		SpringLayout springLayout = new SpringLayout();
-		saveCoverPavel.setLayout(springLayout);
+		saveCoverPanel.setLayout(springLayout);
 
 		Font inputFont = utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 14);
 		Font lblInputFont = utils.createFont("com/financify/resources/Poppins/Poppins-SemiBold.ttf", Font.PLAIN, 18); 
@@ -269,7 +281,7 @@ public class Home extends ExtraJPanel{
 				year.put(currDate[1], savedThisMonth); 
 				monthlySavedJSON.put(currDate[0], year);
 				
-				saveCoverPavel.uncover();
+				saveCoverPanel.uncover();
 				txtSave.setText("");
 			}		
 		});
@@ -287,7 +299,7 @@ public class Home extends ExtraJPanel{
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCoverPavel.uncover();
+				saveCoverPanel.uncover();
 				txtSave.setText("");
 			}		
 		});
@@ -299,13 +311,166 @@ public class Home extends ExtraJPanel{
 
 		BlankWrapper savePanel = new BlankWrapper(_savePanel);
 		savePanel.setPreferredSize(new Dimension(300, 200));
-		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, savePanel, 0, SpringLayout.HORIZONTAL_CENTER, saveCoverPavel);
-		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, savePanel, 0, SpringLayout.VERTICAL_CENTER, saveCoverPavel);
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, savePanel, 0, SpringLayout.HORIZONTAL_CENTER, saveCoverPanel);
+		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, savePanel, 0, SpringLayout.VERTICAL_CENTER, saveCoverPanel);
 
-		saveCoverPavel.add(savePanel);
+		saveCoverPanel.add(savePanel);
 	}
 
 	private void initSpendCoverPanel() {
+		spendCoverPanel = new CoverPanel();
+		SpringLayout springLayout = new SpringLayout();
+		spendCoverPanel.setLayout(springLayout);
+
+		Font inputFont = utils.createFont("com/financify/resources/Poppins/Poppins-Regular.ttf", Font.PLAIN, 14);
+		Font lblInputFont = utils.createFont("com/financify/resources/Poppins/Poppins-SemiBold.ttf", Font.PLAIN, 18); 
+
+		RoundPanel _spendPanel = new RoundPanel();
+		_spendPanel.setLayout(springLayout);
+		_spendPanel.setBackground(Color.decode("#282828"));
+		_spendPanel.setBorderRadius(40);
+
+		JLabel lblTxt1 = new JLabel("Item Name");
+		lblTxt1.setFont(lblInputFont);
+		lblTxt1.setForeground(Color.white);
+		springLayout.putConstraint(SpringLayout.NORTH, lblTxt1, 30, SpringLayout.NORTH, _spendPanel);
+		springLayout.putConstraint(SpringLayout.WEST, lblTxt1, 30, SpringLayout.WEST, _spendPanel);
+
+		int itemNameLim = 30;
+
+		JLabel lblLim = new JLabel("0/"+itemNameLim);
+		lblLim.setFont(inputFont);
+		lblLim.setForeground(Color.white);
+		springLayout.putConstraint(SpringLayout.NORTH, lblLim, 30, SpringLayout.NORTH, _spendPanel);
+		springLayout.putConstraint(SpringLayout.EAST, lblLim, -30, SpringLayout.EAST, _spendPanel);
+
+		JTextField txtName = new JTextField();
+		txtName.setDocument(new TextInputLimit(itemNameLim));
+		txtName.setFont(inputFont);
+		txtName.setPreferredSize(new Dimension(240, 45));
+		txtName.setBorder(new EmptyBorder(10,10,10,10));
+		txtName.setForeground(Color.white);
+		txtName.setBackground(Color.decode("#121212"));
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, txtName, 0, SpringLayout.HORIZONTAL_CENTER, _spendPanel);
+		springLayout.putConstraint(SpringLayout.NORTH, txtName, 0, SpringLayout.SOUTH, lblTxt1);
+		txtName.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				lblLim.setText(utils.displayLimits(txtName.getText().length(), itemNameLim));
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				lblLim.setText(utils.displayLimits(txtName.getText().length(), itemNameLim));
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+			}
+			
+		});
+
+		JLabel lblTxt2 = new JLabel("Spend Amount");
+		lblTxt2.setFont(lblInputFont);
+		lblTxt2.setForeground(Color.white);
+		springLayout.putConstraint(SpringLayout.NORTH, lblTxt2, 17, SpringLayout.SOUTH, txtName);
+		springLayout.putConstraint(SpringLayout.WEST, lblTxt2, 30, SpringLayout.WEST, _spendPanel);
+
+		JTextField txtSpend = new JTextField();
+		txtSpend.setFont(inputFont);
+		txtSpend.setPreferredSize(new Dimension(240, 45));
+		txtSpend.setDocument(new MoneyTextInput());
+		txtSpend.setBorder(new EmptyBorder(10,10,10,10));
+		txtSpend.setForeground(Color.white);
+		txtSpend.setBackground(Color.decode("#121212"));
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, txtSpend, 0, SpringLayout.HORIZONTAL_CENTER, _spendPanel);
+		springLayout.putConstraint(SpringLayout.NORTH, txtSpend, 0, SpringLayout.SOUTH, lblTxt2);
+
+		RoundBtn btnSpend = new RoundBtn("Add");
+		btnSpend.setPreferredSize(new Dimension(100, 40));
+		btnSpend.setFont(inputFont);
+		btnSpend.setBorderRadius(30);
+		btnSpend.setForeground(Color.WHITE);
+		btnSpend.setBackground(Color.decode("#993ff4"));
+		springLayout.putConstraint(SpringLayout.SOUTH, btnSpend, -30, SpringLayout.SOUTH, _spendPanel);
+		springLayout.putConstraint(SpringLayout.EAST, btnSpend, -30, SpringLayout.EAST, _spendPanel);
+		btnSpend.addActionListener(new ActionListener() {
+			@Override
+			@SuppressWarnings("unchecked")
+			public void actionPerformed(ActionEvent e) {
+				// get the amount saved and round it
+				Double money = Double.parseDouble(txtSpend.getText());
+				money = (double) Math.round(money*100)/100;
+				System.out.println(money);
+
+				// put it into the json object
+				double totalSpent = (double) globalStatsJSON.get("totalSpent") + money;
+				double currentSaved = (double) globalStatsJSON.get("currentSaved") - money;
+
+				// round values here too so that value wont be a repeating number, ex: 12.33333...
+				currentSaved = (double) Math.round(currentSaved*100)/100;
+
+				globalStatsJSON.put("currentSaved", currentSaved);
+				globalStatsJSON.put("totalSpent", totalSpent);
+
+				// update money display
+				lblMoney.setText("P" + currentSaved);
+
+				// UPDATE THE VALUES ON DATES.JSON
+				LocalDate d = LocalDate.now(); // get the month and year of today first
+				DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy MMM");
+
+				// separate the date format like 2025 Mar
+				// into an array where the index 0  is the year and index 1 is the month 
+				String[] currDate = df.format(d).split(" ");
+					
+				// put into the json
+				JSONObject year = (JSONObject) monthlySavedJSON.get(currDate[0]);
+				double savedThisMonth = (double) year.get(currDate[1]) - money;
+				savedThisMonth = (double) Math.round(savedThisMonth*100)/100;
+				year.put(currDate[1], savedThisMonth); 
+				monthlySavedJSON.put(currDate[0], year);
+				
+				spendCoverPanel.uncover();
+				txtName.setText("");
+				txtSpend.setText("");
+			}		
+		});
+
+		RoundBtn btnCancel = new RoundBtn("Cancel");
+		btnCancel.setPreferredSize(new Dimension(100, 40));
+		btnCancel.setFont(inputFont);
+		btnCancel.setBorderThickness(1);
+		btnCancel.setBackground(new Color(0,0,0,0));
+		btnCancel.setBorderColor(Color.white);
+		btnCancel.setBorderRadius(30);
+		btnCancel.setForeground(Color.WHITE);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnCancel, -30, SpringLayout.SOUTH, _spendPanel);
+		springLayout.putConstraint(SpringLayout.WEST, btnCancel, 30, SpringLayout.WEST, _spendPanel);
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spendCoverPanel.uncover();
+				txtName.setText("");
+				txtSpend.setText("");
+			}		
+		});
+
+		_spendPanel.add(lblTxt1);
+		_spendPanel.add(lblLim);
+		_spendPanel.add(txtName);
+		_spendPanel.add(lblTxt2);
+		_spendPanel.add(txtSpend);
+		_spendPanel.add(btnSpend);
+		_spendPanel.add(btnCancel);
+
+		BlankWrapper spendPanel = new BlankWrapper(_spendPanel);
+		spendPanel.setPreferredSize(new Dimension(300, 290));
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, spendPanel, 0, SpringLayout.HORIZONTAL_CENTER, spendCoverPanel);
+		springLayout.putConstraint(SpringLayout.VERTICAL_CENTER, spendPanel, 0, SpringLayout.VERTICAL_CENTER, spendCoverPanel);
+
+		spendCoverPanel.add(spendPanel);
 
 	}
 

@@ -105,12 +105,12 @@ public class SelfNotes extends ExtraJPanel{
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				lblLimit1.setText(displayLimits(txtTitle.getText().length(), titleLim));	
+				lblLimit1.setText(utils.displayLimits(txtTitle.getText().length(), titleLim));	
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				lblLimit1.setText(displayLimits(txtTitle.getText().length(), titleLim));	
+				lblLimit1.setText(utils.displayLimits(txtTitle.getText().length(), titleLim));	
 			}
 
 			@Override
@@ -144,12 +144,12 @@ public class SelfNotes extends ExtraJPanel{
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				lblLimit2.setText(displayLimits(txtArea.getText().length(), areaLim));
+				lblLimit2.setText(utils.displayLimits(txtArea.getText().length(), areaLim));
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				lblLimit2.setText(displayLimits(txtArea.getText().length(), areaLim));
+				lblLimit2.setText(utils.displayLimits(txtArea.getText().length(), areaLim));
 			}
 
 			@Override
@@ -450,9 +450,6 @@ public class SelfNotes extends ExtraJPanel{
 		}
 	}
 	
-	private String displayLimits(int strlen, int limit){
-		return strlen + "/" + limit;
-	}
 
 	@Override
 	public void onExit() {

@@ -111,8 +111,11 @@ public class BarChart extends javax.swing.JPanel {
         for(double value: chartDataValues){
             if(max_value < value){
                 max_value = value;
-            }
+           }
         }
+
+        // make sure that max value is greater than zero
+        max_value = Math.max(0.01, max_value);
 
         
         
@@ -130,7 +133,7 @@ public class BarChart extends javax.swing.JPanel {
                 g2d.setColor(barColor);
             }
             
-            int interpolatedY = utils.interpolateInt(0, px_height, t);
+            int interpolatedY = utils.interpolateInt(0, px_height, ShapeFunctions.easeOutExpo(t));
             int posx = (i*(thickness/2)) + ( (margin) * (i+1) );
             g2d.fillRoundRect(posx , bottom_line-interpolatedY, thickness, interpolatedY, borderRadius, borderRadius);
             

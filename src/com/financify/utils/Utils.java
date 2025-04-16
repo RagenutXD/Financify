@@ -120,4 +120,8 @@ public class Utils {
         return new Color(r, g, b);
     }
 
+	public String displayLimits(int strlen, int limit){
+		return strlen + "/" + limit;
+	}
+
 }

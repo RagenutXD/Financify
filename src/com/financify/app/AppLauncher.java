@@ -359,7 +359,7 @@ public class AppLauncher extends JFrame{
 		/*
 		 * This method is only used in testing so that i dont have to repeatedly delete the files
 		 */
-		int answer = Integer.valueOf(JOptionPane.showInputDialog("Use existing data(0)\nRefresh data(1)"));
+		int answer = Integer.valueOf(JOptionPane.showInputDialog("This is used for debugging so that devs don't have to repeatedly keep deleting the Financify folder\nIf this is your first time opening the app type 1\nUse existing data(0)\nRefresh data(1)"));
 		if(answer==0){
 			if(new File(GlobalConstants.BASE_PATH).mkdir()){
 				createDirs();	

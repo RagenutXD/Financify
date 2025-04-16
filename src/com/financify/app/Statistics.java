@@ -206,7 +206,7 @@ public class Statistics extends ExtraJPanel {
         miniPanel4.add(lblMini4);
         miniPanel4.add(lblTimeSpent);
 
-        moneyChart = new BarChart(true, 0.5f);
+        moneyChart = new BarChart(true, 1.0f);
         moneyChart.setPreferredSize(new Dimension(750, 300));
         moneyChart.setFont(smallFont);
         moneyChart.setMaxBarColor(Color.decode("#993ff4"));
