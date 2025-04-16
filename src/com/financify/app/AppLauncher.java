@@ -76,7 +76,7 @@ public class AppLauncher extends JFrame{
 		initJSONObjects();
 		initComponents();
 
-		setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON));
+		setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON, purchaseLogsJSON));
 	}
 
 
@@ -155,7 +155,55 @@ public class AppLauncher extends JFrame{
 						}
 					}	
 				}, 0.3f);
-				setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON));
+				setCurrentPanel(new Home(globalStatsJSON, monthlySavedJSON, purchaseLogsJSON));
+			}
+		});
+
+		RoundBtn btnPurchaseLogs = new RoundBtn("Logs");
+		btnPurchaseLogs.setFont(fontBtn);
+		btnPurchaseLogs.setPreferredSize(new Dimension(100, 40));
+		btnPurchaseLogs.setBorderRadius(30);
+		btnPurchaseLogs.setForeground(Color.white);
+		btnPurchaseLogs.setBackground(sidePanelColor);
+		springLayout.putConstraint(SpringLayout.NORTH, btnPurchaseLogs, 17, SpringLayout.SOUTH, btnHome);
+		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnPurchaseLogs, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
+		btnPurchaseLogs.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						btnPurchaseLogs.setBackground(utils.interpolateColor(sidePanelColor, hoverColor, t));	
+					}
+				}, 0.1f);
+				super.mouseEntered(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						btnPurchaseLogs.setBackground(utils.interpolateColor(hoverColor, sidePanelColor, t));	
+					}
+				}, 0.1f);
+				super.mouseExited(e);
+			}
+		});
+		btnPurchaseLogs.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				utils.playAnimation(new Animation() {
+					@Override
+					public void createAnimation(float t) {
+						if(btnPurchaseLogs.isHovered){
+							btnPurchaseLogs.setBackground(utils.interpolateColor(pressColor, hoverColor, t*t));	
+						}else{
+							btnPurchaseLogs.setBackground(utils.interpolateColor(pressColor, sidePanelColor, t*t));	
+							
+						}
+					}	
+				}, 0.3f);
+				setCurrentPanel(new PurchaseLogs());
 			}
 		});
 
@@ -165,7 +213,7 @@ public class AppLauncher extends JFrame{
 		btnSelfNotes.setBorderRadius(30);
 		btnSelfNotes.setForeground(Color.white);
 		btnSelfNotes.setBackground(sidePanelColor);
-		springLayout.putConstraint(SpringLayout.NORTH, btnSelfNotes, 17, SpringLayout.SOUTH, btnHome);
+		springLayout.putConstraint(SpringLayout.NORTH, btnSelfNotes, 17, SpringLayout.SOUTH, btnPurchaseLogs);
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, btnSelfNotes, 0, SpringLayout.HORIZONTAL_CENTER, sidePanel);
 		btnSelfNotes.addMouseListener(new MouseAdapter() {
 			@Override
@@ -259,6 +307,7 @@ public class AppLauncher extends JFrame{
 
 		sidePanel.add(logo);
 		sidePanel.add(btnHome);
+		sidePanel.add(btnPurchaseLogs);
 		sidePanel.add(btnSelfNotes);
 		sidePanel.add(btnStatistics);
 
@@ -310,13 +359,16 @@ public class AppLauncher extends JFrame{
 	private JSONObject globalStatsJSON;
     private JSONObject monthlySavedJSON;
 	private JSONArray notesJSON;
+	private JSONArray purchaseLogsJSON;
 
     private void initJSONObjects(){
         try{
+
             JSONParser parser = new JSONParser();
             globalStatsJSON = (JSONObject) parser.parse(utils.fileToString("\\global_stats.json"));
 			monthlySavedJSON = (JSONObject) parser.parse(utils.fileToString("\\dates.json"));
 			notesJSON = (JSONArray) parser.parse(utils.fileToString("\\notes.json"));
+			purchaseLogsJSON = (JSONArray) parser.parse(utils.fileToString("\\purchase_logs.json"));
 
             //FileWriter file = new FileWriter("src/com/financify/resources/global_stats.json");
             //file.write(globalStatsJSON.toString());
@@ -351,6 +403,11 @@ public class AppLauncher extends JFrame{
 			fwNotes.write("[\n]");
 			fwNotes.flush();
 			fwNotes.close();
+
+			FileWriter fwPurchaseLogs = new FileWriter(GlobalConstants.BASE_PATH + "\\purchase_logs.json");
+			fwPurchaseLogs.write("[\n]");
+			fwPurchaseLogs.flush();
+			fwPurchaseLogs.close();
 
 		//}
 	}

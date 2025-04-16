@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import javax.naming.event.ObjectChangeListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.financify.components.Animation;
@@ -32,13 +32,15 @@ public class Home extends ExtraJPanel{
 	private Utils utils = new Utils();
 	private JSONObject globalStatsJSON;
 	private JSONObject monthlySavedJSON;
+	private JSONArray purchaseLogsJSON;
 	private JLabel lblMoney;
 	private CoverPanel saveCoverPanel;
 	private CoverPanel spendCoverPanel;
 	
-	public Home(JSONObject globalStatsJSON, JSONObject monthlySavedJSON){
+	public Home(JSONObject globalStatsJSON, JSONObject monthlySavedJSON, JSONArray purchaseLogsJSON){
 		this.globalStatsJSON = globalStatsJSON;
 		this.monthlySavedJSON = monthlySavedJSON;
+		this.purchaseLogsJSON = purchaseLogsJSON;
 		initComponents();
 	}
 
@@ -419,18 +421,30 @@ public class Home extends ExtraJPanel{
 
 				// UPDATE THE VALUES ON DATES.JSON
 				LocalDate d = LocalDate.now(); // get the month and year of today first
-				DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy MMM");
+				DateTimeFormatter df = DateTimeFormatter.ofPattern("MMM-dd-yyyy");
 
-				// separate the date format like 2025 Mar
-				// into an array where the index 0  is the year and index 1 is the month 
-				String[] currDate = df.format(d).split(" ");
+				String currDate = df.format(d);
+
+				// split the date into 3 segments
+				
+				// 0 - month
+				// 1 - day
+				// 2 - year
+				String[] dateArr = currDate.split("-");
 					
-				// put into the json
-				JSONObject year = (JSONObject) monthlySavedJSON.get(currDate[0]);
-				double savedThisMonth = (double) year.get(currDate[1]) - money;
+				// put into the monthly json 
+				JSONObject year = (JSONObject) monthlySavedJSON.get(dateArr[2]);
+				double savedThisMonth = (double) year.get(dateArr[0]) - money;
 				savedThisMonth = (double) Math.round(savedThisMonth*100)/100;
-				year.put(currDate[1], savedThisMonth); 
-				monthlySavedJSON.put(currDate[0], year);
+				year.put(dateArr[0], savedThisMonth); 
+				monthlySavedJSON.put(dateArr[2], year);
+
+				// add to the purchase logs json
+				JSONObject log = new JSONObject();
+				log.put("item", txtName.getText());
+				log.put("date", currDate);
+				log.put("cost", money);
+				purchaseLogsJSON.add(log);
 				
 				spendCoverPanel.uncover();
 				txtName.setText("");
@@ -486,6 +500,11 @@ public class Home extends ExtraJPanel{
 			datesFile.write(monthlySavedJSON.toJSONString());
 			datesFile.flush();
 			datesFile.close();
+
+			FileWriter purchaseLogsFile = new FileWriter(GlobalConstants.BASE_PATH + "\\purchase_logs.json");
+			purchaseLogsFile.write(purchaseLogsJSON.toJSONString());
+			purchaseLogsFile.flush();
+			purchaseLogsFile.close();
 		}catch(IOException e){
 			e.printStackTrace();
 		}
