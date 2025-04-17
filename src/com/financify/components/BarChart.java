@@ -148,7 +148,7 @@ public class BarChart extends javax.swing.JPanel {
             // draw numbers
             Double rounded = Double.valueOf(Math.round(value*100)/100);
             txtWidth = g2d.getFontMetrics().stringWidth(rounded.toString());
-            g2d.drawString(rounded.toString(), posx + ((thickness-txtWidth)/2), (bottom_line-interpolatedY) - txtWidth);
+            g2d.drawString(rounded.toString(), posx + ((thickness-txtWidth)/2), (bottom_line-interpolatedY) - (txtWidth/2));
         }
         
         

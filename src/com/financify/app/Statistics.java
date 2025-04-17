@@ -213,7 +213,7 @@ public class Statistics extends ExtraJPanel {
         moneyChart.setBarColor(Color.decode("#282828"));
         moneyChart.setBorderRadius(20);
         moneyChart.setLabelColor(Color.white);
-        springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 300, SpringLayout.NORTH,this);
+        springLayout.putConstraint(SpringLayout.NORTH, moneyChart, 20, SpringLayout.SOUTH,miniPanel1);
         springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, moneyChart, 0, SpringLayout.HORIZONTAL_CENTER, this);
         initChart();
 

@@ -203,7 +203,7 @@ public class AppLauncher extends JFrame{
 						}
 					}	
 				}, 0.3f);
-				setCurrentPanel(new PurchaseLogs());
+				setCurrentPanel(new PurchaseLogs(purchaseLogsJSON));
 			}
 		});
 
