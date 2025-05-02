@@ -115,6 +115,7 @@ public class PurchaseLogs extends ExtraJPanel{
 		logContainer.setLayout(springLayout);
 		logContainer.setBorderRadius(40);
 		logContainer.setPreferredSize(new Dimension(((int)gridContainer.getMaximumSize().getWidth()), 100));
+		logContainer.setMaximumSize(new Dimension(((int)gridContainer.getMaximumSize().getWidth()), 100));
 		logContainer.setBackground(Color.decode("#242424"));
 
 		if(item.equals("")) item = "Unnamed Entry";

@@ -44,8 +44,8 @@ public class Statistics extends ExtraJPanel {
     }
 
     private void initComponents(){
-        SpringLayout springLayout = new SpringLayout();
-        
+        SpringLayout springLayout = new SpringLayout(); 
+
         setPreferredSize(new Dimension(770, 1000)); // Set preferred size larger than the scroll pane
         setBackground(Color.decode("#121212"));
         setLayout(springLayout);
